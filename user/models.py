@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.contrib.auth import get_user_model
 
 class User(AbstractUser):
     class Role(models.TextChoices):
@@ -40,3 +41,6 @@ class Vendor(User):
     
     def welcome(self):
         return "Only for vendors"
+    
+
+
