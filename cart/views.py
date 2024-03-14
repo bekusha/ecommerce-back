@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from user.models import User
 from django.core.exceptions import PermissionDenied
 
-# Assuming CartItemSerializer is already defined as shown earlier
+
 
 class CartDetailView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -20,6 +20,7 @@ class CartDetailView(APIView):
         cart, created = Cart.objects.get_or_create(user=user)
         cart_items = CartItem.objects.filter(cart=cart)
         serializer = CartItemSerializer(cart_items, many=True)
+        
         return Response(serializer.data)
 
 class AddToCartView(generics.CreateAPIView):

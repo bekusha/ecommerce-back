@@ -1,8 +1,11 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
+
+from user.models import User
 from .models import Category, Product
 from .serializers import CategorySerializer, ProductSerializer
 from .permissions import IsVendorOrReadOnly
+from rest_framework.permissions import IsAuthenticated
 
 class ProductListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = ProductSerializer
@@ -30,3 +33,17 @@ class ProductDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 class CategoryListAPIView(generics.ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+
+class MyProductsAPIView(generics.ListAPIView):
+    serializer_class = ProductSerializer
+    permission_classes = [IsAuthenticated]  # Ensures only authenticated users can access this view
+
+    def get_queryset(self):
+        """
+        Returns a list of products for the currently authenticated vendor.
+        """
+        user = self.request.user
+        if user.is_authenticated and user.role == User.Role.VENDOR:
+            return Product.objects.filter(vendor=user)
+        else:
+            return Product.objects.none() 
