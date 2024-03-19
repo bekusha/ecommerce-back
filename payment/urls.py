@@ -1,8 +1,8 @@
 from django.urls import path
-from .views import store, paymentComplete, checkout
+from .views import create_transaction, RetrieveTransactionView
 
 urlpatterns = [
-    path('', store, name="store"),
-    path('checkout/<int:pk>/', checkout, name="checkout"),
-    path('complete/', paymentComplete, name="complete"),
+    path('transactions/', create_transaction, name='transactions'),
+     path('transactions/<str:transaction_id>/', RetrieveTransactionView.as_view(), name='retrieve-transaction'),
+    
 ]

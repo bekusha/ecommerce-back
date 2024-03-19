@@ -1,42 +1,20 @@
-from django.shortcuts import render
-from product.models import Product
-import json
-from django.http import JsonResponse
-from rest_framework import generics
-from .models import Order, OrderItem
-from .serializers import OrderSerializer, OrderItemSerializer
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .serializers import TransactionSerializer
+from rest_framework.generics import RetrieveAPIView
+from .models import Transaction
+from .serializers import TransactionSerializer
 
+@api_view(['POST'])
+def create_transaction(request):
+    serializer = TransactionSerializer(data=request.data, context={'request': request})
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-def checkout(request, pk):
-    product = Product.objects.get(id=pk)
-    context = {'product':product}
-    return render(request, 'base/checkout.html', context)
-
-def store(request):
-    products = Product.objects.all()
-    context = {'products': products}
-    return render(request, 'base/store.html', context)
-
-def paymentComplete(request):
-    body = json.loads(request.body)
-    print('Body: ', body)
-    return JsonResponse('Payment completed!', safe=False)
-
-
-
-
-# class OrderListCreate(generics.ListCreateAPIView):
-#     queryset = Order.objects.all()
-#     serializer_class = OrderSerializer
-
-# class OrderDetail(generics.RetrieveUpdateDestroyAPIView):
-#     queryset = Order.objects.all()
-#     serializer_class = OrderSerializer
-
-# class OrderItemListCreate(generics.ListCreateAPIView):
-#     queryset = OrderItem.objects.all()
-#     serializer_class = OrderItemSerializer
-
-# class OrderItemDetail(generics.RetrieveUpdateDestroyAPIView):
-#     queryset = OrderItem.objects.all()
-#     serializer_class = OrderItemSerializer
+class RetrieveTransactionView(RetrieveAPIView):
+    queryset = Transaction.objects.all()
+    serializer_class = TransactionSerializer
+    lookup_field = 'transaction_id'

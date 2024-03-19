@@ -1,15 +1,30 @@
 from rest_framework import serializers
-from .models import Order, OrderItem
-from product.models import Product  
+from .models import Transaction, TransactionItem, Product
+from django.contrib.auth import get_user_model
 
-class OrderItemSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = OrderItem
-        fields = ['id', 'order', 'product', 'quantity', 'price']
+User = get_user_model()
 
-class OrderSerializer(serializers.ModelSerializer):
-    items = OrderItemSerializer(many=True, read_only=True)
+class TransactionItemSerializer(serializers.ModelSerializer):
+    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
 
     class Meta:
-        model = Order
-        fields = ['id', 'user', 'created_at', 'updated_at', 'status', 'items']
+        model = TransactionItem
+        fields = ['product', 'quantity', 'price_at_transaction']
+
+class TransactionSerializer(serializers.ModelSerializer):
+    items = TransactionItemSerializer(many=True, write_only=True)
+    user = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = Transaction
+        fields = ['user', 'transaction_id', 'total_amount', 'currency', 'created_at', 'updated_at', 'payer_details', 'items']
+        read_only_fields = ['created_at', 'updated_at']
+
+    def create(self, validated_data):
+        items_data = validated_data.pop('items')
+        # Manually set the user from the request context
+        validated_data['user'] = self.context['request'].user
+        transaction = Transaction.objects.create(**validated_data)
+        for item_data in items_data:
+            TransactionItem.objects.create(**item_data, transaction=transaction)
+        return transaction
