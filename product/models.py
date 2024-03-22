@@ -24,6 +24,7 @@ class Product(models.Model):
     image5 = models.ImageField(upload_to='product_images/', blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)  # Updated to use ForeignKey
     created_at = models.DateTimeField(auto_now_add=True)
+    quantity = models.IntegerField(default=0) 
 
     def get_vendor_name(self):
         return self.vendor.username

@@ -22,3 +22,13 @@ class TransactionItem(models.Model):
 
     def __str__(self):
         return f"{self.quantity} of {self.product.name} at {self.price_at_transaction} each"
+
+    def save(self, *args, **kwargs):
+        if self._state.adding:
+            if self.product.quantity >= self.quantity:  
+                self.product.quantity -= self.quantity
+                self.product.save()
+            else:
+                
+                raise ValueError("Not enough stock to complete the transaction.")
+        super(TransactionItem, self).save(*args, **kwargs)
