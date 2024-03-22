@@ -23,7 +23,14 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
         return queryset
 
     def perform_create(self, serializer):
-        serializer.save(vendor=self.request.user)
+        # Get the category ID from the request data
+        category_id = self.request.data.get('category', None)
+        # If a category ID is provided, retrieve the category instance
+        category = None
+        if category_id:
+            category = get_object_or_404(Category, id=category_id)
+        # Save the product with the associated category
+        serializer.save(vendor=self.request.user, category=category)
 
 class ProductDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
@@ -47,3 +54,11 @@ class MyProductsAPIView(generics.ListAPIView):
             return Product.objects.filter(vendor=user)
         else:
             return Product.objects.none() 
+        
+class ProductsByVendorAPIView(generics.ListAPIView):
+    
+    serializer_class = ProductSerializer
+
+    def get_queryset(self):
+        vendor_id = self.kwargs['vendor_id']
+        return Product.objects.filter(vendor_id=vendor_id)

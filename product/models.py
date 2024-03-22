@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from user.models import User
 
 class Category(models.Model):
@@ -23,6 +24,13 @@ class Product(models.Model):
     image5 = models.ImageField(upload_to='product_images/', blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)  # Updated to use ForeignKey
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def get_vendor_name(self):
+        return self.vendor.username
+
+    def get_absolute_url(self):
+        return reverse('product-detail', kwargs={'pk': self.pk})
+
 
     def __str__(self):
         return self.name

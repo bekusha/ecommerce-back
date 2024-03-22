@@ -7,9 +7,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import status
 from rest_framework import permissions, status, views
-
-
-
+from rest_framework.views import APIView
+from .models import Vendor
 
 
 class UserRegistrationAPIView(CreateAPIView):
@@ -32,3 +31,12 @@ class UserDetailView(views.APIView):
         user = request.user
         serializer = UserDetailSerializer(user)
         return Response(serializer.data)
+
+class VendorDetailView(APIView):
+    def get(self, request, vendor_id):
+        try:
+            vendor = Vendor.objects.get(id=vendor_id)
+            serializer = UserDetailSerializer(vendor)
+            return Response(serializer.data)
+        except Vendor.DoesNotExist:
+            return Response({"error": "Vendor not found"}, status=status.HTTP_404_NOT_FOUND)
