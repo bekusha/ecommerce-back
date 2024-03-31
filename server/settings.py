@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'cart',
     'payment',
     'content',
-    
+    'whitenoise.runserver_nostatic'
 ]
 
 REST_FRAMEWORK = {
@@ -65,10 +65,17 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware'
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ORIGIN_WHITELIST = [
+    "https://localhost:3000",
+     "https://www.bekasstore.online/"
+    
+]
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 ROOT_URLCONF = 'server.urls'
 
