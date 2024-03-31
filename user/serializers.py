@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-# Get the custom user model
+
 User = get_user_model()
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -14,7 +14,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         model = User
         fields = ['username', 'email', 'password', 'password2', 'role']
         extra_kwargs = {
-            'password': {'write_only': True}  # Ensure password is write-only and not returned by the serializer
+            'password': {'write_only': True}  
         }
 
     def validate(self, attrs):
@@ -29,17 +29,17 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         """
         Overridden create method to handle user creation.
         """
-        # Remove the password2 field as it's not needed for user creation
+        
         validated_data.pop('password2', None)
 
-        # Create the user instance
+        
         user = User(
             email=validated_data['email'],
             username=validated_data['username'],
-            role=validated_data.get('role', User.Role.CONSUMER)  # Default to CONSUMER if no role is specified
+            role=validated_data.get('role', User.Role.CONSUMER)  
         )
 
-        # Set user's password
+        
         user.set_password(validated_data['password'])
         user.save()
 
@@ -49,3 +49,8 @@ class UserDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username', 'email', 'role']
+
+class UserPayPalAddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['paypal_address']

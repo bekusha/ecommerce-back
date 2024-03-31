@@ -10,6 +10,7 @@ class User(AbstractUser):
 
     base_role = Role.ADMIN
     role = models.CharField(max_length = 50, choices = Role.choices)
+    paypal_address = models.CharField(max_length=255, blank=True, null=True)
 
     def save(self,  *args, **kwargs):
             return super().save(*args, **kwargs)
@@ -36,6 +37,8 @@ class VendorManager(BaseUserManager):
 class Vendor(User):
     base_role = User.Role.VENDOR
     vendor = VendorManager()
+    
+    
     class Meta:
         proxy = True
     

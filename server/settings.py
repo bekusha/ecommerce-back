@@ -9,7 +9,9 @@ environ.Env.read_env(env_file='.env')
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = env('SECRET_KEY')
-
+PAYPAL_CLIENT_ID = env('PAYPAL_CLIENT_ID')
+PAYPAL_CLIENT_SECRET = env('PAYPAL_CLIENT_SECRET')
+PAYPAL_ADMIN_EMAIL = env('PAYPAL_ADMIN_EMAIL')
 DEBUG = True
 
 ALLOWED_HOSTS = ['localhost']
@@ -48,9 +50,11 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),  # Change times for production
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1), 
-}
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,  
+    'BLACKLIST_AFTER_ROTATION': True,  
+}   
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
