@@ -71,10 +71,9 @@ MIDDLEWARE = [
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_ORIGIN_WHITELIST = [
     "https://localhost:3000",
-     "https://www.bekasstore.online/"
-    
-]
-
+     "https://www.bekasstore.online/",
+    "https://api.bekasstore.online/"
+ ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 ROOT_URLCONF = 'server.urls'
