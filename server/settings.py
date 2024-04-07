@@ -12,16 +12,19 @@ SECRET_KEY = env('SECRET_KEY')
 PAYPAL_CLIENT_ID = env('PAYPAL_CLIENT_ID')
 PAYPAL_CLIENT_SECRET = env('PAYPAL_CLIENT_SECRET')
 PAYPAL_ADMIN_EMAIL = env('PAYPAL_ADMIN_EMAIL')
-DEBUG = True
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['api.bekasstore.online', 'bekasstore.online', 'localhost', '127.0.0.1']
+
+DEBUG = False
+
+
+CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000"
+    'https://bekasstore.online',  # Assuming the frontend serves from HTTPS
+    'https://api.bekasstore.online',
 ]
-
-CORS_ALLOW_ALL_ORIGINS = False 
-
 CORS_ALLOW_CREDENTIALS = True
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -74,7 +77,7 @@ CORS_ALLOW_ORIGIN_WHITELIST = [
      "https://www.bekasstore.online/",
     "https://api.bekasstore.online/"
  ]
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 
 ROOT_URLCONF = 'server.urls'
 
@@ -153,6 +156,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 
 # Default primary key field type
