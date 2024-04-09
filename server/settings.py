@@ -13,15 +13,15 @@ PAYPAL_CLIENT_ID = env('PAYPAL_CLIENT_ID')
 PAYPAL_CLIENT_SECRET = env('PAYPAL_CLIENT_SECRET')
 PAYPAL_ADMIN_EMAIL = env('PAYPAL_ADMIN_EMAIL')
 
-ALLOWED_HOSTS = ['api.bekasstore.online', 'bekasstore.online', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['api.bekasstore.pro', 'bekasstore.pro', 'localhost', '127.0.0.1']
 
 DEBUG = False
 
 
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
-    'https://bekasstore.online',  # Assuming the frontend serves from HTTPS
-    'https://api.bekasstore.online',
+    'https://bekasstore.pro',  # Assuming the frontend serves from HTTPS
+    'https://api.bekasstore.pro',
 ]
 CORS_ALLOW_CREDENTIALS = True
 
@@ -74,8 +74,8 @@ MIDDLEWARE = [
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_ORIGIN_WHITELIST = [
     "https://localhost:3000",
-     "https://www.bekasstore.online/",
-    "https://api.bekasstore.online/"
+     "https://www.bekasstore.pro/",
+    "https://api.bekasstore.pro/"
  ]
 
 
