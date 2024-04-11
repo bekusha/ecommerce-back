@@ -20,10 +20,12 @@ DEBUG = False
 
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
-    'https://bekasstore.pro',  # Assuming the frontend serves from HTTPS
-    'https://api.bekasstore.pro',
+    "https://localhost:3000",
+    "https://www.bekasstore.pro",
+    "https://api.bekasstore.pro"
 ]
 CORS_ALLOW_CREDENTIALS = True
+
 
 # Application definition
 
@@ -71,13 +73,8 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware'
 ]
 
-CORS_ALLOW_ALL_ORIGINS = False
-CORS_ALLOWED_ORIGINS = [
-    "https://localhost:3000",
-     "https://www.bekasstore.pro/",
-    "https://api.bekasstore.pro/"
- ]
-ALLOWED_HOSTS = ['api.bekasstore.pro', 'bekasstore.pro', 'localhost', '127.0.0.1']
+
+
 
 
 ROOT_URLCONF = 'server.urls'
