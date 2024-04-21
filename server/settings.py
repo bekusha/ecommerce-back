@@ -23,7 +23,7 @@ PAYPAL_MODE = 'sandbox'
 
 ALLOWED_HOSTS = ['api.bekasstore.pro', 'bekasstore.pro', 'localhost', '127.0.0.1']
 
-DEBUG = True
+DEBUG = False
 
 
 CORS_ALLOW_ALL_ORIGINS = False
