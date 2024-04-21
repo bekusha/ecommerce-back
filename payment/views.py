@@ -5,6 +5,12 @@ from rest_framework.response import Response
 from .models import Transaction, TransactionItem, User
 from .serializers import TransactionSerializer
 from django.db import transaction as db_transaction
+from rest_framework.generics import RetrieveAPIView
+from .models import Transaction
+
+class RetrieveTransactionView(RetrieveAPIView):
+    queryset = Transaction.objects.all()
+    serializer_class = TransactionSerializer
 
 @api_view(['POST'])
 def create_transaction(request):
