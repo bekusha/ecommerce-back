@@ -42,18 +42,18 @@ class CategoryListAPIView(generics.ListAPIView):
     serializer_class = CategorySerializer
 
 class MyProductsAPIView(generics.ListAPIView):
-    # serializer_class = ProductSerializer
-    # permission_classes = [IsAuthenticated]  # Ensures only authenticated users can access this view
+    serializer_class = ProductSerializer
+    permission_classes = [IsAuthenticated]  # Ensures only authenticated users can access this view
 
     def get_queryset(self):
         """
         Returns a list of products for the currently authenticated vendor.
         """
-        # user = self.request.user
-        # if user.is_authenticated and user.role == User.Role.VENDOR:
-        #     return Product.objects.filter(vendor=user)
-        # else:
-        #     return Product.objects.none() 
+        user = self.request.user
+        if user.is_authenticated and user.role == User.Role.VENDOR:
+            return Product.objects.filter(vendor=user)
+        else:
+            return Product.objects.none() 
         
 class ProductsByVendorAPIView(generics.ListAPIView):
     
