@@ -1,6 +1,7 @@
 from django.db import models
 from user.models import User
 from product.models import Product
+from decimal import Decimal
 
 class Transaction(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='transactions')
@@ -18,8 +19,8 @@ class Transaction(models.Model):
     
     def save(self, *args, **kwargs):
         if not self.pk:  # Calculating amounts only on creation
-            self.admin_amount = self.total_amount * 0.10
-            self.vendor_amount = self.total_amount * 0.90
+            self.admin_amount = self.total_amount * Decimal('0.10')
+            self.vendor_amount = self.total_amount * Decimal('0.90')
         super().save(*args, **kwargs)
 
 class TransactionItem(models.Model):

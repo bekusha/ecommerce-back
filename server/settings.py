@@ -20,9 +20,9 @@ paypalrestsdk.configure({
     "client_secret": env('PAYPAL_CLIENT_SECRET')
 })
 
-ALLOWED_HOSTS = ['api.bekasstore.pro', 'bekasstore.pro', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['*','api.bekasstore.pro', 'bekasstore.pro', 'localhost', '127.0.0.1']
 
-DEBUG = False
+DEBUG = True
 
 
 CORS_ALLOW_ALL_ORIGINS = False
