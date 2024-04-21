@@ -12,15 +12,16 @@ SECRET_KEY = env('SECRET_KEY')
 PAYPAL_CLIENT_ID = env('PAYPAL_CLIENT_ID')
 PAYPAL_CLIENT_SECRET = env('PAYPAL_CLIENT_SECRET')
 PAYPAL_ADMIN_EMAIL = env('PAYPAL_ADMIN_EMAIL')
+PAYPAL_MODE = 'sandbox' 
 
-import paypalrestsdk
-paypalrestsdk.configure({
-    "mode": "sandbox",  # Change to "live" in production
-    "client_id": env('PAYPAL_CLIENT_ID'),
-    "client_secret": env('PAYPAL_CLIENT_SECRET')
-})
+# import paypalrestsdk
+# paypalrestsdk.configure({
+#     "mode": PAYPAL_MODE,
+#     "client_id": PAYPAL_CLIENT_ID,
+#     "client_secret": PAYPAL_CLIENT_SECRET
+# })
 
-ALLOWED_HOSTS = ['*','api.bekasstore.pro', 'bekasstore.pro', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['api.bekasstore.pro', 'bekasstore.pro', 'localhost', '127.0.0.1']
 
 DEBUG = True
 
