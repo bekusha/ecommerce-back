@@ -22,7 +22,7 @@ CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "https://www.bekasstore.pro",
-    "https://api.bekasstore.pro/"
+    "https://api.bekasstore.pro"
 ]
 CORS_ALLOW_CREDENTIALS = True
 
