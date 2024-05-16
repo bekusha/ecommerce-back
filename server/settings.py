@@ -16,9 +16,7 @@ PAYPAL_MODE = 'sandbox'
 
 OPENAI_API_KEY = env('OPENAI_API_KEY')
 
-LANGCHAIN_TRACING_V2="true"
-LANGCHAIN_API_KEY = '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'
-LANGCHAIN_ENDPOINT = 'your_langchain_endpoint_here'
+
 
 
 
