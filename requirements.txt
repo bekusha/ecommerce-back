@@ -103,3 +103,7 @@ urllib3==2.1.0
     # via requests
 yarl==1.9.2
     # via aiohttp
+
+whitenoise==5.3.0
+psycopg2-binary==2.9.3  
+Pillow==9.0.1  # Use the latest version or a version compatible with your Django setup

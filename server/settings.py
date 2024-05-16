@@ -14,16 +14,18 @@ PAYPAL_CLIENT_SECRET = env('PAYPAL_CLIENT_SECRET')
 PAYPAL_ADMIN_EMAIL = env('PAYPAL_ADMIN_EMAIL')
 PAYPAL_MODE = 'sandbox' 
 
-# import paypalrestsdk
-# paypalrestsdk.configure({
-#     "mode": PAYPAL_MODE,
-#     "client_id": PAYPAL_CLIENT_ID,
-#     "client_secret": PAYPAL_CLIENT_SECRET
-# })
+OPENAI_API_KEY = env('OPENAI_API_KEY')
+
+LANGCHAIN_TRACING_V2="true"
+LANGCHAIN_API_KEY = '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'
+LANGCHAIN_ENDPOINT = 'your_langchain_endpoint_here'
+
+
+
 
 ALLOWED_HOSTS = ['api.bekasstore.pro', 'bekasstore.pro', 'localhost', '127.0.0.1']
 
-DEBUG = False
+DEBUG = True
 
 
 CORS_ALLOW_ALL_ORIGINS = False
@@ -53,7 +55,8 @@ INSTALLED_APPS = [
     'cart',
     'payment',
     'content',
-    'whitenoise.runserver_nostatic'
+    'whitenoise.runserver_nostatic',
+    'langchain'
 ]
 
 REST_FRAMEWORK = {
@@ -163,7 +166,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 
 # Default primary key field type

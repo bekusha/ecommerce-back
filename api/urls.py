@@ -10,4 +10,5 @@ urlpatterns = [
     path('payment/', include('payment.urls')),
     path('content/', include('content.urls')),
     
+    
 ]
