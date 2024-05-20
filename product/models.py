@@ -25,6 +25,8 @@ class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)  # Updated to use ForeignKey
     created_at = models.DateTimeField(auto_now_add=True)
     quantity = models.IntegerField(default=0) 
+    viscosity = models.CharField(max_length=10, blank=True, null=True, verbose_name="Viscosity Grade")
+    liter = models.FloatField(blank=True, null=True, verbose_name="Container Volume (liters)")
 
     def get_vendor_name(self):
         return self.vendor.username
