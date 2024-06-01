@@ -57,7 +57,8 @@ INSTALLED_APPS = [
     'content',
     'whitenoise.runserver_nostatic',
     'langchain',
-    'ai'
+    'ai',
+    'oils'
 ]
 
 REST_FRAMEWORK = {

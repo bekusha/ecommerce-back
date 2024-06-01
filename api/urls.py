@@ -10,7 +10,7 @@ urlpatterns = [
     path('payment/', include('payment.urls')),
     path('content/', include('content.urls')),
     path('ai/', include('ai.urls')),
-
+    path('oils/', include('oils.urls'))
     
     
 ]
