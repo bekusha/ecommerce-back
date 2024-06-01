@@ -1,42 +1,42 @@
-name: Django CI/CD Pipeline
+# name: Django CI/CD Pipeline
 
-on:
-  push:
-    branches:
-      - master  # Change this to your branch name if different
+# on:
+#   push:
+#     branches:
+#       - master  # Change this to your branch name if different
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
 
-    steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+#     steps:
+#     - name: Checkout Code
+#       uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'  
+#     - name: Set up Python
+#       uses: actions/setup-python@v4
+#       with:
+#         python-version: '3.11'  
 
-    - name: Install Dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+#     - name: Install Dependencies
+#       run: |
+#         python -m pip install --upgrade pip
+#         pip install -r requirements.txt
 
-    - name: SSH and Deploy
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
-        script: |
-          export PGPASSWORD=${{ secrets.DB_PASSWORD }}
-          cd ecommerce-back
-          # Optional: Backup the database before applying migrations
-          pg_dump -U ${{ secrets.DB_USER }} -h localhost ${{ secrets.DB_NAME }} > /backup/directory/backup_$(date +%Y%m%d_%H%M%S).sql
-          source venv/bin/activate
-          git pull origin master
-          python manage.py migrate --noinput  # Apply database migrations
-          # Any other commands you need to restart your Django application
-          sudo systemctl restart your-service.service
-          unset PGPASSWORD  # Clear the password after use for security
+#     - name: SSH and Deploy
+#       uses: appleboy/ssh-action@master
+#       with:
+#         host: ${{ secrets.HOST }}
+#         username: ${{ secrets.USERNAME }}
+#         key: ${{ secrets.SSH_KEY }}
+#         script: |
+#           export PGPASSWORD=${{ secrets.DB_PASSWORD }}
+#           cd ecommerce-back
+#           # Optional: Backup the database before applying migrations
+#           pg_dump -U ${{ secrets.DB_USER }} -h localhost ${{ secrets.DB_NAME }} > /backup/directory/backup_$(date +%Y%m%d_%H%M%S).sql
+#           source venv/bin/activate
+#           git pull origin master
+#           python manage.py migrate --noinput  # Apply database migrations
+#           # Any other commands you need to restart your Django application
+#           sudo systemctl restart your-service.service
+#           unset PGPASSWORD  # Clear the password after use for security
