@@ -1,15 +1,15 @@
 
 from rest_framework.permissions import IsAuthenticated
 from server.settings import SIMPLE_JWT
-from .serializers import  UserRegistrationSerializer, UserDetailSerializer
+from .serializers import  MileageRecordSerializer, UserRegistrationSerializer, UserDetailSerializer
 from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import status
 from rest_framework import permissions, status, views
 from rest_framework.views import APIView
-from .models import User, Vendor
-
+from .models import MileageRecord, User, Vendor
+from rest_framework.generics import ListAPIView
 
 from django.http import JsonResponse
 
@@ -68,3 +68,30 @@ class FetchPayPalAddressView(APIView):
         except User.DoesNotExist:
             return Response({'error': 'Vendor not found'}, status=status.HTTP_404_NOT_FOUND)
         
+
+# class MileageRecordCreateView(CreateAPIView):
+#     serializer_class = MileageRecordSerializer
+#     permission_classes = [IsAuthenticated]
+
+#     def perform_create(self, serializer):
+#         serializer.save(user=self.request.user)
+
+
+class MileageRecordCreateView(CreateAPIView):
+    serializer_class = MileageRecordSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        # Delete existing mileage records before saving the new one
+        MileageRecord.objects.filter(user=self.request.user).delete()
+        # Save the new mileage record
+        serializer.save(user=self.request.user)
+
+class MileageRecordListView(ListAPIView):
+    queryset = MileageRecord.objects.all()
+    serializer_class = MileageRecordSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # Return records only for the authenticated user
+        return self.queryset.filter(user=self.request.user)

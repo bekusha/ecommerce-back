@@ -3,6 +3,8 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
+from user.models import MileageRecord
+
 
 User = get_user_model()
 
@@ -54,3 +56,20 @@ class UserPayPalAddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['paypal_address']
+
+
+class MileageRecordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MileageRecord
+        fields = ['current_mileage', 'next_change_mileage', 'created_at']
+        read_only_fields = ['next_change_mileage', 'created_at']
+
+    def create(self, validated_data):
+        # Automatically calculate the next oil change mileage using the model's save method
+        mileage_record = MileageRecord(
+            user=self.context['request'].user,
+            current_mileage=validated_data['current_mileage']
+        )
+        mileage_record.save()  # This will trigger the save method in the model which calculates the next_change_mileage
+        mileage_record.delete_unnecessary_mileage()  # Optional: Delete unnecessary mileage records
+        return mileage_record

@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.contrib.auth import get_user_model
@@ -46,4 +47,23 @@ class Vendor(User):
         return "Only for vendors"
     
 
+
+class MileageRecord(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='mileage_records')
+    current_mileage = models.IntegerField()
+    next_change_mileage = models.IntegerField(blank=True, null=True)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def save(self, *args, **kwargs):
+        # Always calculate the next_change_mileage based on the current_mileage
+        self.next_change_mileage = self.current_mileage + 6000
+        super().save(*args, **kwargs)
+        # Delete unnecessary mileage records after saving the current one
+        self.delete_unnecessary_mileage()
+
+    def delete_unnecessary_mileage(self):
+        # Keep only the latest mileage record
+        if self.user.mileage_records.count() > 1:
+            # Exclude the current instance and delete others
+            self.user.mileage_records.exclude(pk=self.pk).delete()
 

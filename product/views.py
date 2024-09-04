@@ -1,11 +1,15 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
-
-from user.models import User
+from rest_framework.generics import CreateAPIView
+from user.models import MileageRecord, User
+from user.serializers import MileageRecordSerializer
 from .models import Category, Product
 from .serializers import CategorySerializer, ProductSerializer
 from .permissions import IsVendorOrReadOnly
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+from rest_framework.response import Response
+
 
 class ProductListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = ProductSerializer
@@ -62,3 +66,6 @@ class ProductsByVendorAPIView(generics.ListAPIView):
     def get_queryset(self):
         vendor_id = self.kwargs['vendor_id']
         return Product.objects.filter(vendor_id=vendor_id)
+    
+
+

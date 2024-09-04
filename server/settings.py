@@ -9,10 +9,10 @@ environ.Env.read_env(env_file='.env')
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = env('SECRET_KEY')
-PAYPAL_CLIENT_ID = env('PAYPAL_CLIENT_ID')
-PAYPAL_CLIENT_SECRET = env('PAYPAL_CLIENT_SECRET')
-PAYPAL_ADMIN_EMAIL = env('PAYPAL_ADMIN_EMAIL')
-PAYPAL_MODE = 'sandbox' 
+
+
+
+
 
 OPENAI_API_KEY = env('OPENAI_API_KEY')
 
@@ -30,7 +30,7 @@ DEBUG = True
 
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
+    "http://localhost:8081",
     "https://www.bekasstore.pro",
     "https://api.bekasstore.pro"
 ]
@@ -53,7 +53,6 @@ INSTALLED_APPS = [
     'api',
     'product',
     'cart',
-    'payment',
     'content',
     'whitenoise.runserver_nostatic',
     'langchain',
@@ -116,14 +115,21 @@ WSGI_APPLICATION = 'server.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('DB_NAME'),
-        'USER': env('DB_USER'),
-        'PASSWORD': env('DB_PASSWORD'),
-        'HOST': env('DB_HOST'),
-        'PORT': env('DB_PORT'),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': env('DB_NAME'),
+#         'USER': env('DB_USER'),
+#         'PASSWORD': env('DB_PASSWORD'),
+#         'HOST': env('DB_HOST'),
+#         'PORT': env('DB_PORT'),
+#     }
+# }
 
 # DATABASES = {
 #     'default': {

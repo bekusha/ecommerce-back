@@ -1,5 +1,7 @@
 from django.urls import path
-from .views import FetchPayPalAddressView, UpdatePayPalAddressView,  UserRegistrationAPIView, UserDetailView, VendorDetailView
+
+
+from .views import FetchPayPalAddressView, MileageRecordListView, UpdatePayPalAddressView,  UserRegistrationAPIView, UserDetailView, VendorDetailView,  MileageRecordCreateView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
@@ -10,4 +12,7 @@ urlpatterns = [
     path('vendor/<int:vendor_id>/', VendorDetailView.as_view(), name='vendor-detail'),
     path('update-paypal-address/', UpdatePayPalAddressView.as_view(), name='update_paypal_address'),
     path('vendor/paypal-address/<int:vendor_id>/', FetchPayPalAddressView.as_view(), name='fetch_paypal_address'),
+    path('mileage/create/', MileageRecordCreateView.as_view(), name='mileage_create'), 
+    path('mileage/list/', MileageRecordListView.as_view(), name='mileage_list'),  
 ]
+ 
