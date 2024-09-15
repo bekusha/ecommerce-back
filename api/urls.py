@@ -10,7 +10,7 @@ urlpatterns = [
 
     path('content/', include('content.urls')),
     path('ai/', include('ai.urls')),
-    path('oils/', include('oils.urls'))
-    
+    path('oils/', include('oils.urls')),
+    path('changedelivery/', include('oilchangedelivery.urls'))
     
 ]
