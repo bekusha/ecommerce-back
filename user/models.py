@@ -13,6 +13,10 @@ class User(AbstractUser):
     paypal_address = models.CharField(max_length=255, blank=True, null=True)
     phone = models.CharField(max_length=100, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
+    car_make = models.CharField(max_length=100, blank=True, null=True)
+    car_model = models.CharField(max_length=100, blank=True, null=True)
+    car_year = models.IntegerField(blank=True, null=True)
+    car_vin = models.CharField(max_length=100, blank=True, null=True)
 
 class ConsumerManager(BaseUserManager):
     def get_queryset(self, *args, **kwargs):
