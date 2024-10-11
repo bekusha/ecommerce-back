@@ -51,16 +51,18 @@ class OilRecommendationAPIView(APIView):
                     
                     # Find products matching these viscosities
                     products = Product.objects.filter(viscosity__in=viscosities)
-                    
+
                     if products.exists():
                         product_list = []
                         for product in products:
                             product_data = {
+                                "id": product.id,
                                 "name": product.name,
                                 "price": product.price,
                                 "description": product.description,
                                 "image_url": product.image1.url if product.image1 else None
                             }
+                            print(product_data)
                             product_list.append(product_data)
                         
                         return Response({
