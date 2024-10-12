@@ -62,7 +62,6 @@ INSTALLED_APPS = [
     'cart',
     'content',
     'whitenoise.runserver_nostatic',
-    'langchain',
     'ai',
     'oils',
     'oilchangedelivery'
