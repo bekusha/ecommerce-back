@@ -15,3 +15,8 @@ class ContactPage(models.Model):
 
     def __str__(self):
         return self.title
+
+class MainPage(models.Model):
+    title = models.CharField(max_length=200)
+    image = models.ImageField(upload_to='main_page_images', null=True, blank=True)
+    action = models.CharField(max_length=200, null=True, blank=True)
