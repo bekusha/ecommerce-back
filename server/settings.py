@@ -40,9 +40,12 @@ CORS_ALLOW_METHODS = [
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8081",
-    "http://127.0.0.1:8000",
+    "http://192.168.0.50:8000",
+    "http://172.20.10.3:8081",
+    "http://172.20.10.3:8000",
+    'http://10.177.0.32:8081',
+    'http://10.177.0.32:8000'
 ]
-
 CORS_ALLOW_CREDENTIALS = True
 
 
