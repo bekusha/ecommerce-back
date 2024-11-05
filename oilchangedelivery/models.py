@@ -10,12 +10,11 @@ class OilChangeDelivery(models.Model):
     phone = models.CharField(max_length=10, null=True, blank=True)
     address = models.CharField(max_length=100, null=True, blank=True)
     email = models.EmailField()
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     message = models.TextField()
     ordered_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
     def __str__(self):
-        return f"Oil Change Delivery for {self.user.username} - {self.product.name}"
+        return f"Oil Change Delivery for {self.user.username} "
     
     # def get_ordered_at_georgian_time(self):
     #     georgian_timezone = pytz.timezone('Asia/Tbilisi')
