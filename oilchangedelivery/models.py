@@ -10,7 +10,6 @@ class OilChangeDelivery(models.Model):
     phone = models.CharField(max_length=10, null=True, blank=True)
     address = models.CharField(max_length=100, null=True, blank=True)
     email = models.EmailField()
-    message = models.TextField()
     ordered_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
     def __str__(self):

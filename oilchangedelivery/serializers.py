@@ -7,7 +7,7 @@ User = get_user_model()
 class OilChangeDeliverySerializer(serializers.ModelSerializer):
     class Meta:
         model = OilChangeDelivery
-        fields = ['id', 'user', 'phone', 'address', 'email',  'message', 'ordered_at']
+        fields = ['id', 'user', 'phone', 'address', 'email',  'ordered_at']
         read_only_fields = ['user']  # Mark user field as read-only to prevent client from setting it
 
     def create(self, validated_data):
