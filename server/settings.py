@@ -69,7 +69,8 @@ INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
     'ai',
     'oils',
-    'oilchangedelivery'
+    'oilchangedelivery',
+    'order',
 
 ]
 
