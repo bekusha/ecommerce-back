@@ -1,7 +1,7 @@
-# order/models.py
 from django.db import models
 from django.contrib.auth import get_user_model
 import pytz
+from product.models import Product
 
 User = get_user_model()
 
@@ -32,3 +32,17 @@ class Order(models.Model):
     def ordered_at_georgian(self):
         georgian_timezone = pytz.timezone('Asia/Tbilisi')
         return self.ordered_at.astimezone(georgian_timezone)
+
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_items')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='order_items')
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.product.name} x {self.quantity} for Order {self.order.id}"
+
+    @property
+    def total_price(self):
+        return self.product.price * self.quantity
+
