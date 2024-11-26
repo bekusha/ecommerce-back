@@ -25,7 +25,7 @@ LANGCHAIN_ENDPOINT = 'your_langchain_endpoint_here'
 
 # ALLOWED_HOSTS = ['api.bekasstore.pro', 'bekasstore.pro', 'localhost', '127.0.0.1', '172.20.10.3', '192.168.0.50', '10.177.0.32']
 
-ALLOWED_HOSTS = ['krossgeorgia.xyz', 'www.krossgeorgia.xyz', '134.122.28.2', 'localhost', '127.0.0.1', '192.168.1.101', '185.115.4.177', '93.177.144.124','0.0.0.0']
+ALLOWED_HOSTS = ['krossgeorgia.xyz', 'www.krossgeorgia.xyz', '134.122.28.2', 'localhost', '127.0.0.1', '192.168.1.101', '185.115.4.177', '93.177.144.124','0.0.0.0', '185.70.53.197']
 
 
 

@@ -30,3 +30,10 @@ def create_order_for_product_delivery(sender, instance, created, **kwargs):
             email=instance.email,
             status=instance.status,
         )
+
+# @receiver(post_save, sender=Order)
+# def update_cart_status_from_order(sender, instance, **kwargs):
+#     if instance.cart: 
+#         instance.cart.order_status = instance.status
+#         instance.cart.save()
+#         print(instance.cart.order_status)
