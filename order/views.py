@@ -45,34 +45,40 @@ class PurchaseAPIView(APIView):
         address = request.data.get('address')
         email = request.data.get('email')
         
-        # გადაამოწმე სწორი ტიპი
+        # Check for valid order type
         if order_type not in dict(Order.ORDER_TYPE_CHOICES):
             return Response({"detail": "Invalid order type."}, status=status.HTTP_400_BAD_REQUEST)
 
         # Create a new order
-        order = Order.objects.create(user=user,
-                                    order_type=order_type,
-                                    phone=phone,
-                                    address=address,
-                                    email=email
-                                     )
+        order = Order.objects.create(
+            user=user,
+            order_type=order_type,
+            phone=phone,
+            address=address,
+            email=email
+        )
 
         for item in order_items:
-            product = Product.objects.get(id=item['product_id'])
-            quantity = item['quantity']
+            product_id = item.get('product_id')
+            quantity = item.get('quantity', 1)  # Default quantity to 1
 
-            if quantity > product.quantity:
-                return Response({"detail": f"{product.name} მარაგში არ არის საკმარისი."}, status=status.HTTP_400_BAD_REQUEST)
+            product = None
+            if product_id:
+                product = Product.objects.filter(id=product_id).first()
+                if not product:
+                    return Response({"detail": f"Product with ID {product_id} does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+                if quantity > product.quantity:
+                    return Response({"detail": f"{product.name} is out of stock."}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Create an OrderItem
+                # Reduce product stock
+                product.quantity -= quantity
+                product.save()
+
+            # Create an OrderItem (product can be None)
             OrderItem.objects.create(
                 order=order,
                 product=product,
                 quantity=quantity
             )
 
-            # Reduce product stock
-            product.quantity -= quantity
-            product.save()
-
-        return Response({"message": "შეკვეთა წარმატებით გაფორმდა!", "order_id": order.id}, status=status.HTTP_201_CREATED)
+        return Response({"message": "Order successfully created!", "order_id": order.id}, status=status.HTTP_201_CREATED)
