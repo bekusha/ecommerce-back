@@ -25,7 +25,8 @@ LANGCHAIN_ENDPOINT = 'your_langchain_endpoint_here'
 
 # ALLOWED_HOSTS = ['api.bekasstore.pro', 'bekasstore.pro', 'localhost', '127.0.0.1', '172.20.10.3', '192.168.0.50', '10.177.0.32']
 
-ALLOWED_HOSTS = ['krossgeorgia.xyz', 'www.krossgeorgia.xyz', '134.122.28.2', 'localhost', '127.0.0.1', '192.168.1.101', '185.115.4.177', '93.177.144.124','0.0.0.0', '185.70.53.197']
+# ALLOWED_HOSTS = ['krossgeorgia.xyz', 'www.krossgeorgia.xyz', '134.122.28.2', 'localhost', '127.0.0.1', '192.168.1.101', '185.115.4.177', '93.177.144.124','0.0.0.0', '185.70.53.197']
+ALLOWED_HOSTS = ['*']
 
 
 
@@ -48,13 +49,16 @@ CORS_ALLOW_CREDENTIALS = True
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
+    'django.contrib.sites',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-     'rest_framework_simplejwt',
-     'corsheaders',
+    'rest_framework_simplejwt',
+    'rest_framework.authtoken',
+    'dj_rest_auth',
+    'corsheaders',
     'user',
     'api',
     'product',
@@ -65,8 +69,24 @@ INSTALLED_APPS = [
     'oils',
     'oilchangedelivery',
     'order',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.facebook',
+]   
+SITE_ID = 1
 
-]
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
+
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+LOGIN_REDIRECT_URL = "/"
+
+# ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'http'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -104,7 +124,7 @@ ROOT_URLCONF = 'server.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -116,6 +136,26 @@ TEMPLATES = [
         },
     },
 ]
+
+SOCIALACCOUNT_PROVIDERS = {
+    'facebook': {
+        'METHOD': 'oauth2',
+        'SDK_URL': '//connect.facebook.net/{locale}/sdk.js',
+        'SCOPE': ['email', 'public_profile'],
+        'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
+        'INIT_PARAMS': {'cookie': True},
+        'FIELDS': [
+            'id',
+            'email',
+            'name',
+            'picture',
+            'short_name'
+        ],
+        'EXCHANGE_TOKEN': True,
+        'VERIFIED_EMAIL': False,
+        'VERSION': 'v13.0',
+    }
+}
 
 WSGI_APPLICATION = 'server.wsgi.application'
 
@@ -144,6 +184,8 @@ DATABASES = {
     }
 }
 
+SITE_ID = 1
+
 
 # DATABASES = {
 #     'default': {
@@ -151,7 +193,10 @@ DATABASES = {
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
-
+DJ_REST_AUTH = {
+    'USE_JWT': True,
+    'TOKEN_MODEL': None,
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
