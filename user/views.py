@@ -10,8 +10,11 @@ from rest_framework import permissions, status, views
 from rest_framework.views import APIView
 from .models import MileageRecord, User, Vendor
 from rest_framework.generics import ListAPIView
-
-from django.http import JsonResponse
+from rest_framework_simplejwt.tokens import RefreshToken
+from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
+from dj_rest_auth.registration.views import SocialLoginView
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 class UserRegistrationAPIView(CreateAPIView):
     serializer_class = UserRegistrationSerializer
@@ -95,3 +98,27 @@ class MileageRecordListView(ListAPIView):
     def get_queryset(self):
         # Return records only for the authenticated user
         return self.queryset.filter(user=self.request.user)
+    
+@method_decorator(csrf_exempt, name='dispatch')
+class FacebookLogin(SocialLoginView):
+    adapter_class = FacebookOAuth2Adapter
+
+    def post (self, request, *args, **kwargs):
+        
+        response = super().post(request, *args, **kwargs)
+        user = self.request.user
+
+        refresh = RefreshToken.for_user(user)
+        tokens = {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }
+        return Response({
+            'user':{
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'role':'CONSUMER'
+            },
+            'tokens': tokens
+        })
