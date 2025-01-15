@@ -71,7 +71,7 @@ class ProductsByVendorAPIView(generics.ListAPIView):
 
 
 # class UpdateProductQuantityForUserAPIView(APIView):
-#     permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
 #     def post(self, request, pk):
 #         """

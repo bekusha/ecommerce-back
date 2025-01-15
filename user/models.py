@@ -10,7 +10,7 @@ class User(AbstractUser):
 
     base_role = Role.ADMIN
     role = models.CharField(max_length=50, choices=Role.choices)
-    paypal_address = models.CharField(max_length=255, blank=True, null=True)
+    device_id = models.CharField(max_length=100, blank=True, null=True, unique=True)
     phone = models.CharField(max_length=100, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
     car_make = models.CharField(max_length=100, blank=True, null=True)

@@ -123,13 +123,15 @@ from rest_framework.response import Response
 from rest_framework import status
 from openai import OpenAI
 from django.conf import settings
-
+from rest_framework.permissions import IsAuthenticated
 client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
 from .serializers import CarQuerySerializer
 from product.models import Product
 import re
+
 class OilRecommendationAPIView(APIView):
+    permission_classes = [IsAuthenticated]
     def post(self, request):
         serializer = CarQuerySerializer(data=request.data)
         if serializer.is_valid():

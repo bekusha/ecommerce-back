@@ -7,7 +7,7 @@ from .serializers import OilChangeDeliverySerializer
 class OilChangeDeliveryListCreate(ListCreateAPIView):
     queryset = OilChangeDelivery.objects.all()
     serializer_class = OilChangeDeliverySerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         # Assign the request user to the user field
@@ -17,12 +17,12 @@ class OilChangeDeliveryListCreate(ListCreateAPIView):
 class OilChangeDeliveryDetail(RetrieveUpdateDestroyAPIView):
     queryset = OilChangeDelivery.objects.all()
     serializer_class = OilChangeDeliverySerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
 # List OilChangeDeliveries specific to the authenticated user
 class UserOilChangeDeliveryListView(ListAPIView):
     serializer_class = OilChangeDeliverySerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         # Filter to only include deliveries associated with the authenticated user

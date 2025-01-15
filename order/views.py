@@ -44,6 +44,7 @@ class PurchaseAPIView(APIView):
         phone = request.data.get('phone')
         address = request.data.get('address')
         email = request.data.get('email')
+        print("order items" , order_items)
         
         # გადაამოწმე სწორი ტიპი
         if order_type not in dict(Order.ORDER_TYPE_CHOICES):

@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from .models import AboutPage, ContactPage, MainPage
 from .serializers import AboutPageSerializer, ContactPageSerializer, MainPageSerializer
 from rest_framework import generics
+from rest_framework.permissions import AllowAny
 class AboutPageView(APIView):
     def get(self, request, *args, **kwargs):
         instance = AboutPage.objects.last()  # Assuming you want the last created/updated entry
@@ -22,3 +23,4 @@ class ContactPageView(APIView):
 class MainPageListView(generics.ListAPIView):
     queryset = MainPage.objects.all()
     serializer_class = MainPageSerializer
+    permission_classes = [AllowAny]

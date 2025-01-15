@@ -25,10 +25,10 @@ def create_order_for_product_delivery(sender, instance, created, **kwargs):
         Order.objects.create(
             user=instance.user,
             order_type='product_delivery',
-            phone=instance.phone,
-            address=instance.address,
-            email=instance.email,
-            status=instance.status,
+            # phone=instance.phone,
+            # address=instance.address,
+            # email=instance.email,
+            # status=instance.status,
         )
 
 # @receiver(post_save, sender=Order)
