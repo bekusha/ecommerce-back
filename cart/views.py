@@ -14,8 +14,8 @@ class CartDetailView(APIView):
 
     def get(self, request, *args, **kwargs):
         user = request.user
-        if user.role != User.Role.CONSUMER:
-            return Response({"error": "Only consumers can view the cart."}, status=403)
+        # if user.role != User.Role.CONSUMER:
+        #     return Response({"error": "Only consumers can view the cart."}, status=403)
         
         cart, created = Cart.objects.get_or_create(user=user)
         cart_items = CartItem.objects.filter(cart=cart)
@@ -29,8 +29,9 @@ class AddToCartView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         user = self.request.user
-        if user.role != User.Role.CONSUMER:
-            raise PermissionDenied({"error": "Only consumers can add items to the cart."})
+        print("user role " + user.role)
+
+            
         cart, _ = Cart.objects.get_or_create(user=user)
         serializer.save(cart=cart)
 
