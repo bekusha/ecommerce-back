@@ -3,6 +3,8 @@ from django.contrib.auth import get_user_model
 import pytz
 from cart.models import Cart
 from product.models import Product
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 User = get_user_model()
 
@@ -28,6 +30,26 @@ class Order(models.Model):
 
     def __str__(self):
         return f"{self.get_order_type_display()} Order for {self.user.username} - Status: {self.status}"
+    
+    def notify_user(self, message):
+            channel_layer = get_channel_layer()
+            group_name = f"user_{self.user.id}_{self.user.device_id}"
+            print(f"Sending WebSocket notification to group: {group_name}")
+        
+            async_to_sync(channel_layer.group_send)(
+                group_name,
+                {
+                    'type': 'order_update',
+                    'order_id': message['order_id'],
+                    'status': message['status'],
+                    'order_type': message['order_type'],
+                    'phone': message['phone'],
+                    'address': message['address'],
+                    'email': message['email'],
+                }
+            )
+
+
 
     @property
     def ordered_at_georgian(self):

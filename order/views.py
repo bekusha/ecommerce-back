@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from order.models import Order, OrderItem  # Order და OrderItem მოდელებიდან
 from product.models import Product  # Product მოდელიდან'
+from django.db import transaction
 
 class OrderListAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -34,6 +35,7 @@ class OrderDetailsAPIView(APIView):
 
 
 # Create your views here.
+# @transaction.atomic
 class PurchaseAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -59,7 +61,7 @@ class PurchaseAPIView(APIView):
                                      )
 
         for item in order_items:
-            product = Product.objects.get(id=item['product_id'])
+            product = get_object_or_404(Product, id=item['product_id'])
             quantity = item['quantity']
 
             if quantity > product.quantity:

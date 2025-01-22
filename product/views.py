@@ -6,7 +6,7 @@ from user.serializers import MileageRecordSerializer
 from .models import Category, Product
 from .serializers import CategorySerializer, ProductSerializer
 from .permissions import IsVendorOrReadOnly
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -43,6 +43,7 @@ class ProductDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsVendorOrReadOnly]
 
 class CategoryListAPIView(generics.ListAPIView):
+    permission_classes = [AllowAny]
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
