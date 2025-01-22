@@ -14,7 +14,7 @@ urlpatterns = [
     # path('vendor/paypal-address/<int:vendor_id>/', FetchPayPalAddressView.as_view(), name='fetch_paypal_address'),
     path('mileage/create/', MileageRecordCreateView.as_view(), name='mileage_create'), 
     path('mileage/list/', MileageRecordListView.as_view(), name='mileage_list'),  
-    path('create-consumer/', CheckOrCreateConsumerView.as_view(), name='create_consumer'),
+    path('create-consumer/<str:device_id>/', CheckOrCreateConsumerView.as_view(), name='create_consumer'),
     # path('facebooklogin/', FacebookLogin.as_view(), name='facebooklogin'),
 ]
  

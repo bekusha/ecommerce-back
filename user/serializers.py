@@ -50,7 +50,7 @@ User = get_user_model()
 class UserDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'email', 'role']
+        fields = ['username', 'email', 'role', 'id', 'device_id' ]
 
 class UserPayPalAddressSerializer(serializers.ModelSerializer):
     class Meta:
@@ -65,7 +65,6 @@ class MileageRecordSerializer(serializers.ModelSerializer):
         read_only_fields = ['next_change_mileage', 'created_at']
 
     def create(self, validated_data):
-        # Automatically calculate the next oil change mileage using the model's save method
         mileage_record = MileageRecord(
             user=self.context['request'].user,
             current_mileage=validated_data['current_mileage']

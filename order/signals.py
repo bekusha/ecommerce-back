@@ -17,6 +17,7 @@ def create_order_from_oil_change(sender, instance, created, **kwargs):
             email=instance.email,
             status=instance.status,
         )
+        # send_order_notification(sender, instance, created, **kwargs)
 
         
 @receiver(post_save, sender=Cart)
@@ -30,10 +31,43 @@ def create_order_for_product_delivery(sender, instance, created, **kwargs):
             # email=instance.email,
             # status=instance.status,
         )
+        # send_order_notification(sender, instance, created, **kwargs)
 
-# @receiver(post_save, sender=Order)
-# def update_cart_status_from_order(sender, instance, **kwargs):
-#     if instance.cart: 
-#         instance.cart.order_status = instance.status
-#         instance.cart.save()
-#         print(instance.cart.order_status)
+
+@receiver(post_save, sender=Order)
+def notify_status_change(sender, instance, **kwargs):
+    print("notify_status_change")
+    if instance.pk:  # ობიექტი უკვე არსებობს
+        previous = sender.objects.get(pk=instance.pk)  # არსებული მონაცემის მიღება
+        if previous.status != instance.status:  # თუ სტატუსი შეიცვალა
+            message = {
+                'order_id': instance.id,
+                'status': instance.status,
+                'order_type': instance.order_type,
+                'phone': instance.phone,
+                'address': instance.address,
+                'email': instance.email,
+            }
+            instance.notify_user(message)
+            print(f"Status changed and notification sent for order {instance.id}")
+
+
+@receiver(post_save, sender=Order)
+def send_order_notification(sender, instance, created, **kwargs):
+    # შეტყობინება სტატუსის განახლების დროსაც
+    message = {
+        'order_id': instance.id,
+        'status': instance.status,
+        'order_type': instance.order_type,
+        'phone': instance.phone,
+        'address': instance.address,
+        'email': instance.email,
+    }
+
+    if created:
+        print(f"New order created: {instance.id}")
+    else:
+        print(f"Order updated: {instance.id} - New status: {instance.status}")
+
+    print(f"Sending WebSocket notification: {message}")
+    instance.notify_user(message)
