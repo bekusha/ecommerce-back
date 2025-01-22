@@ -2,7 +2,10 @@
 Describe your Django project here. A brief description explaining what the project does, its purpose, and any other relevant information.
 
 ## Description 
-The Bekas Store Backend API powers the dynamic e-commerce platform that allows users to operate as consumers or vendors. This API handles all data transactions for user registration, product management, shopping cart operations, and payment processing. It employs JWT authentication to secure all endpoints and provide a safe environment for transactions.
+**AI Chatbot Integration:** Provides personalized engine oil recommendations based on user car details using the OpenAI API.
+- **Real-time Communication:** Utilizes WebSockets via Django Channels for live updates and interactions.
+- **E-commerce Functionality:** Includes shopping cart, order management, and car mileage tracking for oil change predictions.
+- **Admin Panel:** Django’s built-in admin panel for managing products, orders, and users.
 
 ## Getting Started
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
@@ -30,6 +33,13 @@ source venv/bin/activate  # On Windows use `env\Scripts\activate`
 
 # Install required packages
 pip install -r requirements.txt
+
+# Install Daphne for WebSocket support
+pip install daphne
+
+# Run the ASGI server for WebSocket connections
+daphne -b 127.0.0.1 -p 8001 ecommerce-back.asgi:application
+
 
 # Migrate the database
 python manage.py migrate
