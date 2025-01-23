@@ -11,9 +11,13 @@ SECRET_KEY = env('SECRET_KEY')
 
 OPENAI_API_KEY = env('OPENAI_API_KEY')
 
-ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = ['*']
 
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://krossgeorgia.xyz',
+    'https://www.krossgeorgia.xyz',
+]
 
 DEBUG = True
 
