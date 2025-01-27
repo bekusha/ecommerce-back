@@ -5,7 +5,7 @@ from .models import Order, OrderItem
 @admin.register(Order)
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'order_type', 'phone', 'address', 'email', 'ordered_at_georgian', 'status', 'order_items_summary')
+    list_display = ('id', 'user', 'order_type', 'phone', 'address', 'email', 'ordered_at_georgian', 'status', 'order_items_summary', 'courier_name', 'courier_phone')
     list_filter = ('status', 'order_type')
     search_fields = ('user__username', 'email', 'phone')
     # actions = ['mark_as_in_progress', 'mark_as_delivered']

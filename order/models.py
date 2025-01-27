@@ -27,7 +27,8 @@ class Order(models.Model):
     email = models.EmailField()
     ordered_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
-
+    courier_name = models.CharField(max_length=100, null=True, blank=True)
+    courier_phone = models.CharField(max_length=10, null=True, blank=True)
     def __str__(self):
         return f"{self.get_order_type_display()} Order for {self.user.username} - Status: {self.status}"
     
@@ -46,6 +47,8 @@ class Order(models.Model):
                     'phone': message['phone'],
                     'address': message['address'],
                     'email': message['email'],
+                    'courier_name': message.get('courier_name', ''),
+                    'courier_phone': message.get('courier_phone', '')
                 }
             )
 
