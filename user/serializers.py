@@ -50,7 +50,7 @@ User = get_user_model()
 class UserDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'email', 'role', 'id', 'device_id' ]
+        fields = ['username', 'email', 'role', 'id', 'device_id', 'phone' ]
 
 class UserPayPalAddressSerializer(serializers.ModelSerializer):
     class Meta:

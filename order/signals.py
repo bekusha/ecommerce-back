@@ -71,3 +71,12 @@ def send_order_notification(sender, instance, created, **kwargs):
 
     print(f"Sending WebSocket notification: {message}")
     instance.notify_user(message)
+
+# save phone number in user model from order
+@receiver(post_save, sender=Order)
+def save_phone_number(sender, instance, created, **kwargs):
+    if created:
+        user = instance.user
+        user.phone = instance.phone
+        user.save()
+        print(f"Phone number saved to user: {user.username}")
