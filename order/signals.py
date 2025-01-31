@@ -47,6 +47,9 @@ def notify_status_change(sender, instance, **kwargs):
                 'phone': instance.phone,
                 'address': instance.address,
                 'email': instance.email,
+                'courier_name': instance.courier_name if instance.courier_name else "",
+                'courier_phone': instance.courier_phone if instance.courier_phone else "",
+                'delivery_time': instance.delivery_time.strftime('%Y-%m-%d %H:%M:%S') if instance.delivery_time else "",
             }
             instance.notify_user(message)
             print(f"Status changed and notification sent for order {instance.id}")
@@ -62,6 +65,9 @@ def send_order_notification(sender, instance, created, **kwargs):
         'phone': instance.phone,
         'address': instance.address,
         'email': instance.email,
+        'courier_name': instance.courier_name if instance.courier_name else "",
+        'courier_phone': instance.courier_phone if instance.courier_phone else "",
+        'delivery_time': instance.delivery_time.strftime('%Y-%m-%d %H:%M:%S') if instance.delivery_time else "",
     }
 
     if created:

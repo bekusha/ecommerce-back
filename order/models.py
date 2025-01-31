@@ -37,7 +37,19 @@ class Order(models.Model):
     def notify_user(self, message):
             channel_layer = get_channel_layer()
             group_name = f"user_{self.user.id}_{self.user.device_id}"
-            print(f"Sending WebSocket notification to group: {group_name}")
+            # Convert datetime to string
+            delivery_time_str = self.delivery_time.strftime('%Y-%m-%d %H:%M:%S') if self.delivery_time else ""
+            print("Final Message Data:", {
+            'order_id': message['order_id'],
+            'status': message['status'],
+            'order_type': message['order_type'],
+            'phone': message['phone'],
+            'address': message['address'],
+            'email': message['email'],
+            'courier_name': self.courier_name,  # დავამატოთ Order-ის ატრიბუტები
+            'courier_phone': self.courier_phone,
+            'delivery_time': self.delivery_time,
+        })
         
             async_to_sync(channel_layer.group_send)(
                 group_name,
@@ -54,6 +66,7 @@ class Order(models.Model):
                     'delivery_time': message.get('delivery_time', ''),
                 }
             )
+    
 
 
 
