@@ -2,13 +2,24 @@
 from django.contrib import admin
 from .models import Order, OrderItem, SavedOrder
 
+
+class OrderItemInline(admin.TabularInline):  # ან admin.StackedInline
+    model = OrderItem
+    extra = 0  # თავიდან ცარიელი OrderItem არ გამოჩნდეს
+    readonly_fields = ('product', 'quantity', 'total_price','liter')
+
+    def liter(self, obj):
+        return f"{obj.product.liter} L" if obj.product and obj.product.liter else "N/A"
+
 @admin.register(Order)
+
 
 class OrderAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'order_type', 'phone', 'address', 'email', 'ordered_at_georgian', 'status', 'order_items_summary', 'courier_name', 'courier_phone','delivery_time')
     list_filter = ('status', 'order_type')
     search_fields = ('user__username', 'email', 'phone')
-    # actions = ['mark_as_in_progress', 'mark_as_delivered']
+    inlines = [OrderItemInline]
+    
 
     def mark_as_in_progress(self, request, queryset):
         for order in queryset:
@@ -32,6 +43,7 @@ class OrderAdmin(admin.ModelAdmin):
         return ' , '.join([f'{item.product.name} რაოდენობა:({item.quantity})/' for item in items])
 
     order_items_summary.short_description = 'Order Items'
+
 
 
 @admin.register(OrderItem)

@@ -1,5 +1,8 @@
 from django.shortcuts import get_object_or_404
 from order.serializers import OrderItemSerializer, OrderSerializer, SavedOrderSerializer
+import logging
+
+logger = logging.getLogger(__name__)
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -62,8 +65,21 @@ class PurchaseAPIView(APIView):
                                      )
 
         for item in order_items:
-            product = get_object_or_404(Product, id=item['product_id'])
-            quantity = item['quantity']
+            if not isinstance(item, dict):
+                return Response({"error": "Order item უნდა იყოს ობიექტის ტიპის"}, status=status.HTTP_400_BAD_REQUEST)
+
+            product_id = item.get("product_id") or item.get("id")  # ეძებს product_id-ს, თუ არაა, მაშინ id-ს იღებს
+
+            if not product_id:
+                return Response({"error": "order_items-ს აკლია product_id ან id"}, status=status.HTTP_400_BAD_REQUEST)
+
+            try:
+                product = get_object_or_404(Product, id=product_id)
+            except Exception as e:
+                logger.error(f"Product not found: {e}")
+                return Response({"error": f"პროდუქტი id={product_id} ვერ მოიძებნა"}, status=status.HTTP_400_BAD_REQUEST)
+
+            quantity = item["quantity"]
 
             if quantity > product.quantity:
                 return Response({"detail": f"{product.name} მარაგში არ არის საკმარისი."}, status=status.HTTP_400_BAD_REQUEST)
@@ -78,6 +94,7 @@ class PurchaseAPIView(APIView):
             # Reduce product stock
             product.quantity -= quantity
             product.save()
+
 
         return Response({"message": "შეკვეთა წარმატებით გაფორმდა!", "order_id": order.id}, status=status.HTTP_201_CREATED)
     
