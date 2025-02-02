@@ -1,6 +1,6 @@
 # order/admin.py
 from django.contrib import admin
-from .models import Order, OrderItem
+from .models import Order, OrderItem, SavedOrder
 
 @admin.register(Order)
 
@@ -37,3 +37,8 @@ class OrderAdmin(admin.ModelAdmin):
 @admin.register(OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):
     list_display = ('order', 'product', 'quantity', 'total_price')
+
+
+@admin.register(SavedOrder)
+class SavedOrderAdmin(admin.ModelAdmin):
+    list_display = ('user', 'order', 'mileage', 'oil_used', 'created_at')

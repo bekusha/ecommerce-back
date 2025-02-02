@@ -1,11 +1,12 @@
 from django.shortcuts import get_object_or_404
-from order.serializers import OrderItemSerializer, OrderSerializer
+from order.serializers import OrderItemSerializer, OrderSerializer, SavedOrderSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework import viewsets, permissions
 
-from order.models import Order, OrderItem  # Order და OrderItem მოდელებიდან
+from order.models import Order, OrderItem, SavedOrder  # Order, OrderItem და SavedOrder მოდელებიდან
 from product.models import Product  # Product მოდელიდან'
 from django.db import transaction
 
@@ -79,3 +80,24 @@ class PurchaseAPIView(APIView):
             product.save()
 
         return Response({"message": "შეკვეთა წარმატებით გაფორმდა!", "order_id": order.id}, status=status.HTTP_201_CREATED)
+    
+
+# class SavedOrderViewSet(viewsets.ReadOnlyModelViewSet):
+#     """
+#     API ViewSet for SavedOrders
+#     """
+#     queryset = SavedOrder.objects.all()
+#     serializer_class = SavedOrderSerializer
+#     permission_classes = [permissions.IsAuthenticated]
+
+#     def __init__(self, *args, **kwargs):
+#         print(f"Initializing SavedOrderViewSet with args: {args}, kwargs: {kwargs}")
+#         super().__init__(*args, **kwargs)
+
+class SavedOrderListAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        saved_orders = SavedOrder.objects.filter(user=request.user)
+        serializer = SavedOrderSerializer(saved_orders, many=True)
+        return Response(serializer.data) 

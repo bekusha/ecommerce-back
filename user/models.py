@@ -17,6 +17,7 @@ class User(AbstractUser):
     car_model = models.CharField(max_length=100, blank=True, null=True)
     car_year = models.IntegerField(blank=True, null=True)
     car_vin = models.CharField(max_length=100, blank=True, null=True)
+    mileage = models.PositiveIntegerField( default=0, blank=True, null=True)
 
 class ConsumerManager(BaseUserManager):
     def get_queryset(self, *args, **kwargs):

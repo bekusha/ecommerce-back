@@ -29,7 +29,7 @@ class Product(models.Model):
     quantity = models.IntegerField(default=0)
     viscosity = models.CharField(max_length=10, blank=True, null=True, verbose_name="Viscosity Grade")
     liter = models.FloatField(blank=True, null=True, verbose_name="Container Volume (liters)")
-
+    recommended_quantity = models.IntegerField(default=0, verbose_name="Recommended Quantity")
     def get_vendor_name(self):
         return self.vendor.username
 

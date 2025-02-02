@@ -3,7 +3,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from cart.models import Cart
-from .models import Order
+from .models import Order, SavedOrder
 from oilchangedelivery.models import OilChangeDelivery
 
 @receiver(post_save, sender=OilChangeDelivery)
@@ -86,3 +86,14 @@ def save_phone_number(sender, instance, created, **kwargs):
         user.phone = instance.phone
         user.save()
         print(f"Phone number saved to user: {user.username}")
+
+@receiver(post_save, sender=Order)
+def save_order_data(sender, instance, **kwargs):
+    if instance.status == 'delivered' and not hasattr(instance, 'saved_order'):
+        SavedOrder.objects.create(
+            order=instance,
+            user=instance.user,
+            mileage=instance.mileage,  # მომხმარებლის გარბენის შენახვა
+            oil_used=instance.order_items.first().product if instance.order_items.exists() else None
+        )
+        print(f"Saved order created for order {instance.id}")
