@@ -50,8 +50,14 @@ class PurchaseAPIView(APIView):
         phone = request.data.get('phone')
         address = request.data.get('address')
         email = request.data.get('email')
+        logger.error(f"Received request data: {request.data}") 
         print("order items" , order_items)
         
+        if not order_items:
+            logger.error("❌ order_items ცარიელია")
+            return Response({"error": "order_items ცარიელია"}, status=status.HTTP_400_BAD_REQUEST)
+
+
         # გადაამოწმე სწორი ტიპი
         if order_type not in dict(Order.ORDER_TYPE_CHOICES):
             return Response({"detail": "Invalid order type."}, status=status.HTTP_400_BAD_REQUEST)
@@ -65,6 +71,7 @@ class PurchaseAPIView(APIView):
                                      )
 
         for item in order_items:
+            logger.error(f"Processing item: {item}")
             if not isinstance(item, dict):
                 return Response({"error": "Order item უნდა იყოს ობიექტის ტიპის"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -78,8 +85,8 @@ class PurchaseAPIView(APIView):
             except Exception as e:
                 logger.error(f"Product not found: {e}")
                 return Response({"error": f"პროდუქტი id={product_id} ვერ მოიძებნა"}, status=status.HTTP_400_BAD_REQUEST)
-
-            quantity = item["quantity"]
+            print("item", item)
+            quantity = item.get("quantity")
 
             if quantity > product.quantity:
                 return Response({"detail": f"{product.name} მარაგში არ არის საკმარისი."}, status=status.HTTP_400_BAD_REQUEST)

@@ -6,7 +6,7 @@ from .models import Order, OrderItem, SavedOrder
 class OrderItemInline(admin.TabularInline):  # ან admin.StackedInline
     model = OrderItem
     extra = 0  # თავიდან ცარიელი OrderItem არ გამოჩნდეს
-    readonly_fields = ('product', 'quantity', 'total_price','liter')
+    readonly_fields = ('product', 'recommended_quantity', 'total_price','liter')
 
     def liter(self, obj):
         return f"{obj.product.liter} L" if obj.product and obj.product.liter else "N/A"
@@ -51,6 +51,6 @@ class OrderItemAdmin(admin.ModelAdmin):
     list_display = ('order', 'product', 'quantity', 'total_price')
 
 
-@admin.register(SavedOrder)
-class SavedOrderAdmin(admin.ModelAdmin):
-    list_display = ('user', 'order', 'mileage', 'oil_used', 'created_at')
+# @admin.register(SavedOrder)
+# class SavedOrderAdmin(admin.ModelAdmin):
+#     list_display = ('user', 'order', 'mileage', 'oil_used', 'created_at')

@@ -71,7 +71,21 @@ class Order(models.Model):
             )
     
 
+    # def save(self, *args, **kwargs):
+    #     """
+    #     თუ შეკვეთის სტატუსი `delivered` გახდა, წაშალოს OrderItem-ები და Order-ი.
+    #     `SavedOrder` დარჩება.
+    #     """
+    #     if self.pk:  # თუ Order უკვე არსებობს
+    #         old_status = Order.objects.get(pk=self.pk).status
+    #         if old_status != "delivered" and self.status == "delivered":
+    #             # წაშალე OrderItem-ები
+    #             self.order_items.all().delete()
+    #             # Order-ი წავშალოთ
+    #             self.delete()
+    #             return  # არ განვაახლოთ, რადგან Order აღარ არსებობს
 
+    #     super().save(*args, **kwargs)
 
     @property
     def ordered_at_georgian(self):
@@ -83,7 +97,7 @@ class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='order_items', blank=True, null=True)
     quantity = models.PositiveIntegerField(default=1)
-    
+    recommended_quantity = models.IntegerField(default=0)
     def __str__(self):
         return f"{self.product.name} x {self.quantity} for Order {self.order.id}"
 

@@ -40,7 +40,18 @@ class ProductSerializer(serializers.ModelSerializer):
 
         return selected_bottles.get(obj.liter, 0)  # ვაბრუნებთ მხოლოდ ამ კონკრეტული პროდუქტის რაოდენობას
 
+    def create(self, validated_data):
+            # `recommended_quantity` ითვლება `get_recommended_quantity`-ის საშუალებით
+            instance = super().create(validated_data)
+            instance.quantity = self.get_recommended_quantity(instance)  # `quantity` ველის განახლება
+            instance.save()
+            return instance
 
+    def update(self, instance, validated_data):
+            instance = super().update(instance, validated_data)
+            instance.quantity = self.get_recommended_quantity(instance)  # `quantity` ველის განახლება
+            instance.save()
+            return instance
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
