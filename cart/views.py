@@ -22,6 +22,16 @@ class CartDetailView(APIView):
         serializer = CartItemSerializer(cart_items, many=True)
         
         return Response(serializer.data)
+    
+class ClearCartView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request, *args, **kwargs):
+        """ წაშლის ყველა CartItem-ს მომხმარებლის კალათიდან """
+        user = request.user
+        cart = get_object_or_404(Cart, user=user)
+        CartItem.objects.filter(cart=cart).delete()
+        return Response({"message": "კალათა გასუფთავდა"}, status=status.HTTP_204_NO_CONTENT)
 
 class AddToCartView(generics.CreateAPIView):
     serializer_class = CartItemSerializer

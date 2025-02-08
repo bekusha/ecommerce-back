@@ -81,6 +81,7 @@ class PurchaseAPIView(APIView):
                 return Response({"error": "order_items-ს აკლია product_id ან id"}, status=status.HTTP_400_BAD_REQUEST)
 
             try:
+                print("product_id", product_id)
                 product = get_object_or_404(Product, id=product_id)
             except Exception as e:
                 logger.error(f"Product not found: {e}")
