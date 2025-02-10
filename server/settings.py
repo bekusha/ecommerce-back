@@ -56,7 +56,7 @@ INSTALLED_APPS = [
     'oils',
     'oilchangedelivery',
     'order',
-    
+    'debug_toolbar',
 ]   
 
 SITE_ID = 1
@@ -88,6 +88,12 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+
+]
+
+INTERNAL_IPS = [
+    "127.0.0.1",
 ]
 
 
