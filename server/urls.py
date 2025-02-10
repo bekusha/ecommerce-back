@@ -6,7 +6,7 @@ from django.conf.urls.static import static  # Import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
-    # path('__debug__/', include(debug_toolbar.urls)),
+    # path('accounts/', include('allauth.urls')),
     
 
     # Your other paths here
@@ -16,7 +16,3 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    import debug_toolbar
-    urlpatterns += [
-        path('__debug__/', include(debug_toolbar.urls)),
-    ]
