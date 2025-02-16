@@ -13,6 +13,12 @@ class Order(models.Model):
         ('oil_change', 'Oil Change'),
         ('product_delivery', 'Product Delivery'),
     ]
+
+    PAYMENT_STATUS_CHOICES = [
+        ('not_paid', 'Not Paid'),
+        ('pending', 'Pending'),
+        ('paid', 'Paid'),
+    ]
     
     STATUS_CHOICES = [
         ('pending', 'Pending'),
@@ -31,9 +37,9 @@ class Order(models.Model):
     courier_phone = models.CharField(max_length=10, null=True, blank=True)
     delivery_time = models.DateTimeField(null=True, blank=True)
     mileage = models.PositiveIntegerField(help_text="Mileage of the car in kilometers" , null=True, blank=True) 
-
+    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='not_paid')
     def __str__(self):
-        return f"{self.get_order_type_display()} Order for {self.user.username} - Status: {self.status}"
+        return f"{self.get_order_type_display()} Order for {self.user.username} - Status: {self.status} - Payment: {self.payment_status}"
     
     def notify_user(self, message):
             channel_layer = get_channel_layer()

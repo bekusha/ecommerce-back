@@ -9,6 +9,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = env('SECRET_KEY')
 
+BOG_ACCESS_TOKEN = os.getenv("BOG_ACCESS_TOKEN")
+BOG_CLIENT_ID = os.getenv("BOG_CLIENT_ID")
+BOG_CLIENT_SECRET = os.getenv("BOG_CLIENT_SECRET")
+
 OPENAI_API_KEY = env('OPENAI_API_KEY')
 
 ALLOWED_HOSTS = ['*']
@@ -157,6 +161,14 @@ CHANNEL_LAYERS = {
         },
     }
 }
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/1',  # "1" ნიშნავს, რომ ვებსოკეტებისგან განსხვავებული Redis DB-ს გამოვიყენებთ
+    }
+}
+
 
 AUTH_USER_MODEL = 'user.User'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

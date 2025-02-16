@@ -15,7 +15,7 @@ class OrderItemInline(admin.TabularInline):  # ან admin.StackedInline
 
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'order_type', 'phone', 'address', 'email', 'ordered_at_georgian', 'status', 'order_items_summary', 'courier_name', 'courier_phone','delivery_time')
+    list_display = ('id', 'user', 'order_type', 'phone', 'address', 'email', 'ordered_at_georgian', 'status', 'order_items_summary', 'courier_name', 'courier_phone','delivery_time', 'payment_status')
     list_filter = ('status', 'order_type')
     search_fields = ('user__username', 'email', 'phone')
     inlines = [OrderItemInline]
