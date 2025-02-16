@@ -8,7 +8,6 @@ environ.Env.read_env(env_file='.env')
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = env('SECRET_KEY')
-
 BOG_ACCESS_TOKEN = os.getenv("BOG_ACCESS_TOKEN")
 BOG_CLIENT_ID = os.getenv("BOG_CLIENT_ID")
 BOG_CLIENT_SECRET = os.getenv("BOG_CLIENT_SECRET")

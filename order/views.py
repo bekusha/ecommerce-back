@@ -12,9 +12,7 @@ from order.models import Order, OrderItem, SavedOrder  # Order, OrderItem და
 from product.models import Product  # Product მოდელიდან'
 from django.conf import settings
 import base64
-from django.conf import settings
 from django.core.cache import cache
-from django.shortcuts import redirect
 from django.http import HttpResponse
 
 class BOGPaymentAPI:
@@ -72,8 +70,8 @@ class BOGPaymentAPI:
             'order_id': str(order_id),
             'amount': float(amount),
             'currency': currency,
-            'callback_url': 'https://krossgeorgia.xyz/api/',
-            'return_url': 'https://krossgeorgia.xyz/api/',
+            'callback_url': f"{API_BASE_URL}",
+            'return_url': f"{API_BASE_URL}",
         }
         basket_items = []
         order_items = OrderItem.objects.filter(order_id=order_id)
@@ -110,13 +108,9 @@ class BOGPaymentAPI:
         else:
             logger.error("❌ ვერ შევქმენით შეკვეთა: %s", response.json())
             return None
-        # response = requests.post(url, json=payload, headers=headers)
-        # print("Token Response:", payload) 
-        # if response.status_code == 201:
-        #     return response.json().get('_links', {}).get('redirect')
-        # else:
-        #     logger.error("❌ ვერ შევქმენით შეკვეთა: %s", response.json())
-        #     return None
+   
+
+
 
 def redirect_after_payment(request, order_id):
     """ გადახდის დასრულების შემდეგ გადამისამართება აპლიკაციაში """
@@ -124,14 +118,29 @@ def redirect_after_payment(request, order_id):
         order = Order.objects.get(id=order_id)
         payment_status = order.payment_status  # მიიღე გადახდის სტატუსი
 
-        # ✅ გადავამისამართოთ აპლიკაციაში Deep Linking-ის მეშვეობით
         if payment_status == "paid":
-            return redirect(f"krossGeorgia://payment-success/{order_id}")  # გადახდის წარმატება
+            redirect_url = f"krossGeorgia://payment-success/{order_id}"
         else:
-            return redirect(f"krossGeorgia://payment-failed")  # გადახდის ჩავარდნა
+            redirect_url = "krossGeorgia://payment-failed"
+
+        html_response = f"""
+        <html>
+        <head>
+            <script type="text/javascript">
+                window.location.href = "{redirect_url}";
+            </script>
+            <meta http-equiv="refresh" content="0; url={redirect_url}" />
+        </head>
+        <body>
+            <p>Redirecting... If nothing happens, <a href="{redirect_url}">click here</a>.</p>
+        </body>
+        </html>
+        """
+        return HttpResponse(html_response)
 
     except Order.DoesNotExist:
         return HttpResponse("❌ Order not found", status=404)
+
 
 class PaymentCallbackApiView(APIView):      
     def post(self, request):
