@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from order.models import Order, OrderItem, SavedOrder  # Order, OrderItem და SavedOrder მოდელებიდან
 from product.models import Product  # Product მოდელიდან'
 from django.conf import settings
@@ -142,7 +142,8 @@ def redirect_after_payment(request, order_id):
         return HttpResponse("❌ Order not found", status=404)
 
 
-class PaymentCallbackApiView(APIView):      
+class PaymentCallbackApiView(APIView):    
+    permission_classes = [AllowAny]  
     def post(self, request):
         payment_data = request.data
         order_id = payment_data.get('order_id')
