@@ -55,7 +55,7 @@ class OrderConsumer(AsyncWebsocketConsumer):
         'type': 'order_update',
         'order_id': event.get('order_id'),
         'status': event.get('status'),
-        'payment_status': event.get('payment_status'),  # Default to empty string if None
+        'payment_status': event.get('payment_status', ''),  # Default to empty string if None
         'order_type': event.get('order_type'),
         'phone': event.get('phone'),
         'address': event.get('address'),

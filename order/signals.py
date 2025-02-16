@@ -43,6 +43,7 @@ def notify_status_change(sender, instance, **kwargs):
             message = {
                 'order_id': instance.id,
                 'status': instance.status,
+                'payment_status': instance.payment_status,  
                 'order_type': instance.order_type,
                 'phone': instance.phone,
                 'address': instance.address,

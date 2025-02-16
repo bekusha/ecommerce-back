@@ -15,6 +15,8 @@ import base64
 from django.core.cache import cache
 from django.http import HttpResponse
 
+
+
 class BOGPaymentAPI:
     BASE_URL = 'https://api.bog.ge/payments/v1'
 
@@ -111,17 +113,13 @@ class BOGPaymentAPI:
    
 
 
-
 def redirect_after_payment(request, order_id):
     """ გადახდის დასრულების შემდეგ გადამისამართება აპლიკაციაში """
     try:
         order = Order.objects.get(id=order_id)
-        payment_status = order.payment_status  # მიიღე გადახდის სტატუსი
+        payment_status = order.payment_status or "failed"  # ✅ თუ payment_status None-ია, ჩავწეროთ "failed"
 
-        if payment_status == "paid":
-            redirect_url = f"krossGeorgia://payment-success/{order_id}"
-        else:
-            redirect_url = "krossGeorgia://payment-failed"
+        redirect_url = f"krossGeorgia://payment-success/{order_id}" if payment_status == "paid" else "krossGeorgia://payment-failed"
 
         html_response = f"""
         <html>
@@ -142,6 +140,7 @@ def redirect_after_payment(request, order_id):
         return HttpResponse("❌ Order not found", status=404)
 
 
+
 class PaymentCallbackApiView(APIView):    
     permission_classes = [AllowAny]  
     def post(self, request):
@@ -150,7 +149,7 @@ class PaymentCallbackApiView(APIView):
         status = payment_data.get('status')
 
         if not order_id or not status:
-            return Response({"error": "Invalid payment data"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Invalid payment data"}, status=400)
 
         try: 
             order = Order.objects.get(id=order_id)
@@ -163,7 +162,19 @@ class PaymentCallbackApiView(APIView):
                 order.payment_status = "failed"
             
             order.save()
-
+            message = {
+                'order_id': order.id,
+                'status': order.status,
+                'payment_status': order.payment_status,
+                'order_type': order.order_type,
+                'phone': order.phone,
+                'address': order.address,
+                'email': order.email,
+                'courier_name': order.courier_name if order.courier_name else "",
+                'courier_phone': order.courier_phone if order.courier_phone else "",
+                'delivery_time': order.delivery_time.strftime('%Y-%m-%d %H:%M:%S') if order.delivery_time else "",
+            }
+            order.notify_user(message)
             return Response({"message": "Payment status updated successfully"}, status=status.HTTP_200_OK)
         except Order.DoesNotExist:
             return Response({"error": "Order not found"}, status=status.HTTP_404_NOT_FOUND)
