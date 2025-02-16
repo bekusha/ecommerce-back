@@ -85,9 +85,10 @@ class BOGPaymentAPI:
                 "product_id": str(item.product.id),
             })
         total_amount = sum(item["quantity"] * item["unit_price"] for item in basket_items)
-        redirect_url = f"http://127.0.0.1:8000/api/order/redirect/{order_id}"
+        API_BASE_URL=settings.API_BASE_URL
+        redirect_url = f"{API_BASE_URL}order/redirect/{order_id}"
         payload = {
-            "callback_url": "https://krossgeorgia.xyz/api/order/callback/",
+            "callback_url": f"{API_BASE_URL}order/callback/",
             "external_order_id": str(order_id),
             "purchase_units": {
                 "currency": currency,
