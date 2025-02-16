@@ -65,7 +65,7 @@ class BOGPaymentAPI:
             'Authorization': f'Bearer {access_token}',
             'Content-Type': 'application/json'
         }
-
+        API_BASE_URL=settings.API_BASE_URL
         payload = {
             'order_id': str(order_id),
             'amount': float(amount),
