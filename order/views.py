@@ -161,11 +161,13 @@ def redirect_after_payment(request, order_id):
 class PaymentCallbackApiView(APIView):    
     permission_classes = [AllowAny]  
     def post(self, request):
+        print("🔥 Callback Data:", request.data)  # Debugging  
         payment_data = request.data
         order_id = payment_data.get('order_id')
         status = payment_data.get('status')
 
         if not order_id or not status:
+            print("❌ Invalid data received:", payment_data)  # Debugging
             return Response({"error": "Invalid payment data"}, status=400)
 
         try: 
