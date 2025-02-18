@@ -141,3 +141,5 @@ cython_debug/
 
 # VS Code settings
 .vscode/
+cert.pem
+key.pem

@@ -15,6 +15,10 @@ import base64
 from django.core.cache import cache
 from django.http import HttpResponse
 import time
+from cryptography.hazmat.primitives.serialization import load_pem_public_key
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import padding
+
 
 
 
@@ -157,50 +161,68 @@ def redirect_after_payment(request, order_id):
         return HttpResponse("❌ Order not found", status=404)
 
 
+BOG_PUBLIC_KEY = """
+-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu4RUyAw3+CdkS3ZNILQh
+zHI9Hemo+vKB9U2BSabppkKjzjjkf+0Sm76hSMiu/HFtYhqWOESryoCDJoqffY0Q
+1VNt25aTxbj068QNUtnxQ7KQVLA+pG0smf+EBWlS1vBEAFbIas9d8c9b9sSEkTrr
+TYQ90WIM8bGB6S/KLVoT1a7SnzabjoLc5Qf/SLDG5fu8dH8zckyeYKdRKSBJKvhx
+tcBuHV4f7qsynQT+f2UYbESX/TLHwT5qFWZDHZ0YUOUIvb8n7JujVSGZO9/+ll/g
+4ZIWhC1MlJgPObDwRkRd8NFOopgxMcMsDIZIoLbWKhHVq67hdbwpAq9K9WMmEhPn
+PwIDAQAB
+-----END PUBLIC KEY-----
+"""
+class PaymentCallbackApiView(APIView):
+    permission_classes = [AllowAny]
 
-class PaymentCallbackApiView(APIView):    
-    permission_classes = [AllowAny]  
+    def verify_signature(self, signature, request_body):
+        """ 
+        ✅ Callback-ის ხელმოწერის ვერიფიკაცია 
+        """
+        try:
+            public_key = load_pem_public_key(BOG_PUBLIC_KEY.encode())
+
+            # 🔹 ხელმოწერის Base64 დეკოდირება
+            decoded_signature = base64.b64decode(signature)
+
+            # 🔹 მონაცემების ვერიფიკაცია RSA-SHA256-ით
+            public_key.verify(
+                decoded_signature,
+                request_body,
+                padding.PKCS1v15(),
+                hashes.SHA256()
+            )
+            return True
+        except Exception as e:
+            logger.error("❌ ვერიფიკაციის შეცდომა: %s", str(e))
+            return False
+
     def post(self, request):
-        print("🔥 Callback Data:", request.data)  # Debugging  
-        payment_data = request.data
-        order_id = payment_data.get('order_id')
-        status = payment_data.get('status')
+        signature = request.headers.get("Callback-Signature")
+        request_body = request.body.decode("utf-8")  # ✅ სიზუსტით body-ის გამოყენება
+
+        if not signature:
+            return Response({"error": "Callback-Signature არ არის header-ში"}, status=400)
+
+        # ❗ ვერიფიკაცია უნდა მოხდეს დესერიალიზაციამდე!
+        if not self.verify_signature(signature, request_body):
+            return Response({"error": "ხელმოწერის ვერიფიკაცია ჩავარდა"}, status=400)
+
+        payment_data = json.loads(request_body)
+        order_id = payment_data.get("body", {}).get("order_id")
+        status = payment_data.get("body", {}).get("status")
 
         if not order_id or not status:
-            print("❌ Invalid data received:", payment_data)  # Debugging
             return Response({"error": "Invalid payment data"}, status=400)
 
-        try: 
-            order = Order.objects.get(id=order_id)
-            print(f"🔄 Payment Callback Received: Order {order.id}, Status: {status}")
-            if status == "paid":
-                order.payment_status = "paid"
-            elif status == "pending":
-                order.payment_status = "pending"
-            elif status == "failed":
-                order.payment_status = "failed"
-            
+        try:
+            order = get_object_or_404(Order, id=order_id)
+            order.payment_status = status
             order.save()
-            order.refresh_from_db()  # ✅ Ensure it's updated in the DB
-            print(f"✅ Order Updated: ID {order.id}, New Status: {order.payment_status}")
 
-            message = {
-                'order_id': order.id,
-                'status': order.status,
-                'payment_status': order.payment_status,
-                'order_type': order.order_type,
-                'phone': order.phone,
-                'address': order.address,
-                'email': order.email,
-                'courier_name': order.courier_name if order.courier_name else "",
-                'courier_phone': order.courier_phone if order.courier_phone else "",
-                'delivery_time': order.delivery_time.strftime('%Y-%m-%d %H:%M:%S') if order.delivery_time else "",
-            }
-            order.notify_user(message)
             return Response({"message": "Payment status updated successfully"}, status=status.HTTP_200_OK)
         except Order.DoesNotExist:
             return Response({"error": "Order not found"}, status=status.HTTP_404_NOT_FOUND)
-
             
 
 class OrderListAPIView(APIView):
