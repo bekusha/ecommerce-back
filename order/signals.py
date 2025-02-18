@@ -72,7 +72,6 @@ def send_order_notification(sender, instance, created, **kwargs):
         'status': instance.status,
         'order_type': instance.order_type,
         'payment_status': instance.payment_status,  # ✅ დავამატოთ გადახდის სტატუსი
-
         'phone': instance.phone,
         'address': instance.address,
         'email': instance.email,
