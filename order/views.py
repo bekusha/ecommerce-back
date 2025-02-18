@@ -14,6 +14,7 @@ from django.conf import settings
 import base64
 from django.core.cache import cache
 from django.http import HttpResponse
+import time
 
 
 
@@ -117,9 +118,21 @@ def redirect_after_payment(request, order_id):
     """ გადახდის დასრულების შემდეგ გადამისამართება აპლიკაციაში """
     try:
         order = Order.objects.get(id=order_id)
-        payment_status = order.payment_status or "failed"  # ✅ თუ payment_status None-ია, ჩავწეროთ "failed"
+        print(f"🔍 Order Found: ID {order.id}, Status: {order.payment_status}")
 
-        redirect_url = f"krossGeorgia://payment-success/{order_id}" if payment_status == "paid" else "krossGeorgia://payment-failed"
+        # ველოდებით გადახდის სტატუსის განახლებას მაქსიმუმ 10 წამი
+        max_attempts = 5
+        attempt = 0
+
+        while order.payment_status in ["not_paid", "pending", ""] and attempt < max_attempts:
+            time.sleep(2)  # 2 წამის ლოდინი
+            order.refresh_from_db()
+            print(f"🔄 Checking Payment Status: Attempt {attempt + 1}, Status: {order.payment_status}")
+            attempt += 1
+
+        redirect_url = f"krossgeorgia://payment-success/{order_id}" if order.payment_status == "paid" else "krossgeorgia://payment-failed"
+        
+        print(f"🚀 Redirecting to: {redirect_url}")
 
         html_response = f"""
         <html>
@@ -140,6 +153,10 @@ def redirect_after_payment(request, order_id):
         return HttpResponse("❌ Order not found", status=404)
 
 
+    except Order.DoesNotExist:
+        return HttpResponse("❌ Order not found", status=404)
+
+
 
 class PaymentCallbackApiView(APIView):    
     permission_classes = [AllowAny]  
@@ -153,7 +170,7 @@ class PaymentCallbackApiView(APIView):
 
         try: 
             order = Order.objects.get(id=order_id)
-            
+            print(f"🔄 Payment Callback Received: Order {order.id}, Status: {status}")
             if status == "paid":
                 order.payment_status = "paid"
             elif status == "pending":
@@ -162,6 +179,9 @@ class PaymentCallbackApiView(APIView):
                 order.payment_status = "failed"
             
             order.save()
+            order.refresh_from_db()  # ✅ Ensure it's updated in the DB
+            print(f"✅ Order Updated: ID {order.id}, New Status: {order.payment_status}")
+
             message = {
                 'order_id': order.id,
                 'status': order.status,

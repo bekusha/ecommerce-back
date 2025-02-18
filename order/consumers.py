@@ -51,18 +51,18 @@ class OrderConsumer(AsyncWebsocketConsumer):
             )
 
     async def order_update(self, event):
-         await self.send(text_data=json.dumps({
-        'type': 'order_update',
-        'order_id': event.get('order_id'),
-        'status': event.get('status'),
-        'payment_status': event.get('payment_status', ''),  # Default to empty string if None
-        'order_type': event.get('order_type'),
-        'phone': event.get('phone'),
-        'address': event.get('address'),
-        'email': event.get('email', ''),  # Default to empty string if None
-        'courier_name': event.get('courier_name', ''),  # Default to empty string if None
-        'courier_phone': event.get('courier_phone', ''),
-        'delivery_time': str(event.get('delivery_time', '')),  # Convert datetime to string
+        await self.send(text_data=json.dumps({
+            'type': 'order_update',
+            'order_id': event.get('order_id'),
+            'status': event.get('status'),
+            'payment_status': event.get('payment_status', ''),  # Default to empty string if None
+            'order_type': event.get('order_type'),
+            'phone': event.get('phone'),
+            'address': event.get('address'),
+            'email': event.get('email', ''),  # Default to empty string if None
+            'courier_name': event.get('courier_name', ''),  # Default to empty string if None
+            'courier_phone': event.get('courier_phone', ''),
+            'delivery_time': str(event.get('delivery_time', '')),  # Convert datetime to string
     }))
 
 
