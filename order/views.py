@@ -180,7 +180,7 @@ class PaymentCallbackApiView(APIView):
         ✅ Callback-ის ხელმოწერის ვერიფიკაცია 
         """
         try:
-            public_key = load_pem_public_key(BOG_PUBLIC_KEY.encode())
+            public_key = load_pem_public_key(BOG_PUBLIC_KEY.encode("utf-8"))
 
             # 🔹 ხელმოწერის Base64 დეკოდირება
             decoded_signature = base64.b64decode(signature)
@@ -199,16 +199,17 @@ class PaymentCallbackApiView(APIView):
 
     def post(self, request):
         signature = request.headers.get("Callback-Signature")
-        request_body = request.body.decode("utf-8")  # ✅ სიზუსტით body-ის გამოყენება
+        request_body = request.body
 
         if not signature:
             return Response({"error": "Callback-Signature არ არის header-ში"}, status=400)
 
         # ❗ ვერიფიკაცია უნდა მოხდეს დესერიალიზაციამდე!
         if not self.verify_signature(signature, request_body):
+            logger.error("❌ ხელმოწერის ვერიფიკაცია ჩავარდა")
             return Response({"error": "ხელმოწერის ვერიფიკაცია ჩავარდა"}, status=400)
 
-        payment_data = json.loads(request_body)
+        payment_data = json.loads(request_body.decode("utf-8"))
         order_id = payment_data.get("body", {}).get("order_id")
         status = payment_data.get("body", {}).get("status")
 
