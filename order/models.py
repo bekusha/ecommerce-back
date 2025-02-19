@@ -49,6 +49,7 @@ class Order(models.Model):
             print("Final Message Data:", {
             'order_id': message['order_id'],
             'status': message['status'],
+            'payment_status' : self.payment_status,
             'order_type': message['order_type'],
             'phone': message['phone'],
             'address': message['address'],
@@ -65,6 +66,7 @@ class Order(models.Model):
                     'type': 'order_update',
                     'order_id': message['order_id'],
                     'status': message['status'],
+                    'payment_status' : self.payment_status,
                     'order_type': message['order_type'],
                     'phone': message['phone'],
                     'address': message['address'],
