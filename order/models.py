@@ -71,9 +71,9 @@ class Order(models.Model):
                     'phone': message['phone'],
                     'address': message['address'],
                     'email': message['email'],
-                    'courier_name': message.get('courier_name', ''),
-                    'courier_phone': message.get('courier_phone', ''),
-                    'delivery_time': message.get('delivery_time', ''),
+                    'courier_name': self.courier_name,  # დავამატოთ Order-ის ატრიბუტები
+                    'courier_phone': self.courier_phone,
+                    'delivery_time': self.delivery_time,
                     'mileage': message.get('mileage', ''),
                 }
             )
