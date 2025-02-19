@@ -10,7 +10,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # .env ცვლადების სწორად შემოტანა
 SECRET_KEY = env('SECRET_KEY')
-BOG_ACCESS_TOKEN = env("BOG_ACCESS_TOKEN")
 BOG_CLIENT_ID = env("BOG_CLIENT_ID")
 BOG_CLIENT_SECRET = env("BOG_CLIENT_SECRET")
 OPENAI_API_KEY = env('OPENAI_API_KEY')
