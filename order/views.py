@@ -180,6 +180,7 @@ class PaymentCallbackApiView(APIView):
         ✅ Callback-ის ხელმოწერის ვერიფიკაცია 
         """
         try:
+            logger.info("🔹 [VERIFY] - ვიწყებთ ხელმოწერის ვერიფიკაციას...")
             public_key = load_pem_public_key(BOG_PUBLIC_KEY.encode())
 
             # 🔹 ხელმოწერის Base64 დეკოდირება
@@ -192,53 +193,53 @@ class PaymentCallbackApiView(APIView):
                 padding.PKCS1v15(),
                 hashes.SHA256()
             )
+            logger.info("✅ [VERIFY] - ხელმოწერა წარმატებით დადასტურდა")
             return True
         except Exception as e:
-            logger.error("❌ ვერიფიკაციის შეცდომა: %s", str(e))
+            logger.error(f"❌ [VERIFY] - ვერიფიკაციის შეცდომა: {str(e)}")
             return False
 
     def post(self, request):
         signature = request.headers.get("Callback-Signature")
         request_body = request.body  # ⚠️ *არ ვიყენებთ `.decode("utf-8")`*
 
-        print("\n🔹 Received Headers:", request.headers)
-        print("\n🔹 Received Callback Signature:", signature)
-        print("\n🔹 Raw Request Body:", request_body)
+        logger.info("🔹 [CALLBACK] - ახალი callback request შემოვიდა")
 
         if not signature:
-            print("❌ Callback-Signature არ არის header-ში")
+            logger.error("❌ [CALLBACK] - Callback-Signature არ არის header-ში")
             return Response({"error": "Callback-Signature არ არის header-ში"}, status=400)
 
         # ❗ ვერიფიკაცია უნდა მოხდეს დესერიალიზაციამდე!
         if not self.verify_signature(signature, request_body):
-            logger.error("❌ ხელმოწერის ვერიფიკაცია ჩავარდა")
+            logger.error("❌ [CALLBACK] - ხელმოწერის ვერიფიკაცია ჩავარდა")
             return Response({"error": "ხელმოწერის ვერიფიკაცია ჩავარდა"}, status=400)
 
         try:
             payment_data = json.loads(request_body)  # ⚠️ *ბინარული JSON-ს ვანალიზებთ სწორად!*
-            print("\n✅ Parsed JSON:", payment_data)
+            logger.info(f"✅ [CALLBACK] - Parsed JSON: {payment_data}")
         except json.JSONDecodeError as e:
-            print(f"❌ JSON Parsing Error: {e}")
+            logger.error(f"❌ [CALLBACK] - JSON Parsing Error: {e}")
             return Response({"error": "Invalid JSON"}, status=400)
 
         order_id = payment_data.get("body", {}).get("external_order_id")  # ✅ *შეცვლილი 'order_id'*
         order_status = payment_data.get("body", {}).get("order_status", {}).get("key")  # ✅ *გამართული order_status*
 
-        print(f"\n✅ Order ID: {order_id}, Status: {order_status}")
+        logger.info(f"✅ [CALLBACK] - Order ID: {order_id}, Status: {order_status}")
 
         if not order_id or not order_status:
-            print("❌ Order ID ან Status არასწორია:", payment_data)
+            logger.error(f"❌ [CALLBACK] - Order ID ან Status არასწორია: {payment_data}")
             return Response({"error": "Invalid payment data"}, status=400)
 
         try:
             order = get_object_or_404(Order, id=order_id)
+            old_status = order.payment_status
             order.payment_status = order_status  # ✅ *'completed', 'failed' და ა.შ.*
             order.save()
-            print(f"✅ Order {order_id} Updated to {order_status}")
+            logger.info(f"✅ [CALLBACK] - Order {order_id} Updated: {old_status} ➝ {order_status}")
 
             return Response({"message": "Payment status updated successfully"}, status=status.HTTP_200_OK)
         except Order.DoesNotExist:
-            print("❌ Order not found:", order_id)
+            logger.error(f"❌ [CALLBACK] - Order not found: {order_id}")
             return Response({"error": "Order not found"}, status=status.HTTP_404_NOT_FOUND)
 
 class OrderListAPIView(APIView):
