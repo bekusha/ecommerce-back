@@ -15,10 +15,14 @@ class OrderItemInline(admin.TabularInline):  # ან admin.StackedInline
 
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'order_type', 'phone', 'address', 'email', 'ordered_at_georgian', 'status', 'order_items_summary', 'courier_name', 'courier_phone','delivery_time', 'payment_status')
+    list_display = ('id', 'user', 'order_type', 'phone', 'address', 'email', 'ordered_at_georgian', 'status', 'order_items_summary', 'courier_name', 'courier_phone','delivery_time', 'display_payment_status')
     list_filter = ('status', 'order_type')
     search_fields = ('user__username', 'email', 'phone')
     inlines = [OrderItemInline]
+    def display_payment_status(self, obj):
+        return obj.payment_status or "—"  # ✅ თუ `None`-ია, ვაჩვენებთ `—`
+    
+    display_payment_status.short_description = 'Payment Status'
     
 
     def mark_as_in_progress(self, request, queryset):
