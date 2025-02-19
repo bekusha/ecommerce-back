@@ -41,43 +41,42 @@ class Order(models.Model):
     def __str__(self):
         return f"{self.get_order_type_display()} Order for {self.user.username} - Status: {self.status} - Payment: {self.payment_status}"
     
-    def notify_user(self):
-        """
-        ცვლილებების შემთხვევაში ვაგზავნით WebSocket შეტყობინებას.
-        """
-        channel_layer = get_channel_layer()
-        group_name = f"user_{self.user.id}_{self.user.device_id}"
+    def notify_user(self, message):
+            channel_layer = get_channel_layer()
+            group_name = f"user_{self.user.id}_{self.user.device_id}"
+            # Convert datetime to string
 
-        message = {
-            'order_id': self.id,
-            'status': self.status,
-            'payment_status': self.payment_status,
-            'order_type': self.order_type,
-            'phone': self.phone,
-            'address': self.address,
-            'email': self.email,
-            'courier_name': self.courier_name,  # ✅ ახლა ეს იგზავნება WebSocket-ით
-            'courier_phone': self.courier_phone,  # ✅ იგზავნება WebSocket-ით
-            'delivery_time': self.delivery_time.strftime('%Y-%m-%d %H:%M:%S') if self.delivery_time else '',  # ✅ სწორი ფორმატით
+            print("Final Message Data:", {
+            'order_id': message['order_id'],
+            'status': message['status'],
+            'payment_status' : self.payment_status,
+            'order_type': message['order_type'],
+            'phone': message['phone'],
+            'address': message['address'],
+            'email': message['email'],
+            'courier_name': self.courier_name,  # დავამატოთ Order-ის ატრიბუტები
+            'courier_phone': self.courier_phone,
+            'delivery_time': self.delivery_time,
             'mileage': self.mileage,
-        }
-
-        print("🚀 Sending WebSocket message:", message)
-
-        async_to_sync(channel_layer.group_send)(
-            group_name,
-            {
-                'type': 'order_update',
-                **message,
-            }
-        )
-
-    def save(self, *args, **kwargs):
-        """
-        **Admin Panel-იდან ნებისმიერი ცვლილება გამოიწვევს WebSocket შეტყობინებას.**
-        """
-        super().save(*args, **kwargs)  # ✅ ჩვეულებრივად ვინახავთ
-        self.notify_user()
+        })
+        
+            async_to_sync(channel_layer.group_send)(
+                group_name,
+                {
+                    'type': 'order_update',
+                    'order_id': message['order_id'],
+                    'status': message['status'],
+                    'payment_status' : self.payment_status,
+                    'order_type': message['order_type'],
+                    'phone': message['phone'],
+                    'address': message['address'],
+                    'email': message['email'],
+                    'courier_name': message.get('courier_name', ''),
+                    'courier_phone': message.get('courier_phone', ''),
+                    'delivery_time': message.get('delivery_time', ''),
+                    'mileage': message.get('mileage', ''),
+                }
+            )
     
 
     # def save(self, *args, **kwargs):
