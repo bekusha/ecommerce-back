@@ -53,8 +53,3 @@ class OrderAdmin(admin.ModelAdmin):
 @admin.register(OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):
     list_display = ('order', 'product', 'quantity', 'total_price')
-
-
-# @admin.register(SavedOrder)
-# class SavedOrderAdmin(admin.ModelAdmin):
-#     list_display = ('user', 'order', 'mileage', 'oil_used', 'created_at')

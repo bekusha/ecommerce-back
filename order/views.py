@@ -34,7 +34,6 @@ class BOGPaymentAPI:
             return access_token
         
         url = 'https://oauth2.bog.ge/auth/realms/bog/protocol/openid-connect/token'
-        print("info from settings file" , settings.BOG_CLIENT_ID, settings.BOG_CLIENT_SECRET)
         auth_str = f"{settings.BOG_CLIENT_ID}:{settings.BOG_CLIENT_SECRET}"
         b64_auth_str = base64.b64encode(auth_str.encode()).decode()
 
@@ -46,8 +45,6 @@ class BOGPaymentAPI:
         payload = {
             "grant_type": "client_credentials"
         }
-        print("Payload",payload)
-
         response = requests.post(url, data=payload, headers=headers)
         if response.status_code == 200:
             access_token = response.json().get("access_token")
@@ -105,10 +102,8 @@ class BOGPaymentAPI:
                 "success": redirect_url  # ✅ გადახდის წარმატების შემთხვევაში
         }
         }
-        print("Sending order request with payload:", json.dumps(payload, indent=2))
 
         response = requests.post(url, json=payload, headers=headers)
-        print("BOG API Response:", response.status_code, response.text)  # ✅ Debugging
 
         if response.status_code == 201:
             return response.json().get('_links', {}).get('redirect')
@@ -122,7 +117,6 @@ def redirect_after_payment(request, order_id):
     """ გადახდის დასრულების შემდეგ გადამისამართება აპლიკაციაში """
     try:
         order = Order.objects.get(id=order_id)
-        print(f"🔍 Order Found: ID {order.id}, Status: {order.payment_status}")
 
         # ველოდებით გადახდის სტატუსის განახლებას მაქსიმუმ 10 წამი
         max_attempts = 5
@@ -131,7 +125,6 @@ def redirect_after_payment(request, order_id):
         while order.payment_status in ["pending", ""] and attempt < max_attempts:
             time.sleep(2)  # 2 წამის ლოდინი
             order.refresh_from_db()
-            print(f"🔄 Checking Payment Status: Attempt {attempt + 1}, Status: {order.payment_status}")
             attempt += 1
 
         # ✅ პირდაპირ ვიყენებთ order.payment_status-ს, რადგან უკვე ემთხვევა ბანკის პასუხებს
@@ -179,7 +172,6 @@ class PaymentCallbackApiView(APIView):
         ✅ Callback-ის ხელმოწერის ვერიფიკაცია 
         """
         try:
-            logger.info("🔹 [VERIFY] - ვიწყებთ ხელმოწერის ვერიფიკაციას...")
             public_key = load_pem_public_key(BOG_PUBLIC_KEY.encode())
 
             # 🔹 ხელმოწერის Base64 დეკოდირება
@@ -192,43 +184,31 @@ class PaymentCallbackApiView(APIView):
                 padding.PKCS1v15(),
                 hashes.SHA256()
             )
-            logger.info("✅ [VERIFY] - ხელმოწერა წარმატებით დადასტურდა")
             return True
         except Exception as e:
-            logger.error(f"❌ [VERIFY] - ვერიფიკაციის შეცდომა: {str(e)}")
             return False
 
     def post(self, request):
         signature = request.headers.get("Callback-Signature")
         request_body = request.body  # ⚠️ *არ ვიყენებთ `.decode("utf-8")`*
 
-        logger.info("🔹 [CALLBACK] - ახალი callback request შემოვიდა")
-
         if not signature:
-            logger.error("❌ [CALLBACK] - Callback-Signature არ არის header-ში")
             return Response({"error": "Callback-Signature არ არის header-ში"}, status=400)
 
         # ❗ ვერიფიკაცია უნდა მოხდეს დესერიალიზაციამდე!
         if not self.verify_signature(signature, request_body):
-            logger.error("❌ [CALLBACK] - ხელმოწერის ვერიფიკაცია ჩავარდა")
             return Response({"error": "ხელმოწერის ვერიფიკაცია ჩავარდა"}, status=400)
 
         try:
             payment_data = json.loads(request_body)  # ⚠️ *ბინარული JSON-ს ვანალიზებთ სწორად!*
-            logger.info(f"✅ [CALLBACK] - Parsed JSON: {payment_data}")
         except json.JSONDecodeError as e:
-            logger.error(f"❌ [CALLBACK] - JSON Parsing Error: {e}")
             return Response({"error": "Invalid JSON"}, status=400)
 
         order_id = payment_data.get("body", {}).get("external_order_id")  # ✅ *შეცვლილი 'order_id'*
         order_status = payment_data.get("body", {}).get("order_status", {}).get("key")  # ✅ *გამართული order_status*
 
-        logger.info(f"✅ [CALLBACK] - Order ID: {order_id}, Status: {order_status}")
-
         if not order_id or not order_status:
-            logger.error(f"❌ [CALLBACK] - Order ID ან Status არასწორია: {payment_data}")
             return Response({"error": "Invalid payment data"}, status=400)
-
         try:
             order = get_object_or_404(Order, id=order_id)
             old_status = order.payment_status
@@ -279,14 +259,10 @@ class PurchaseAPIView(APIView):
         phone = request.data.get('phone')
         address = request.data.get('address')
         email = request.data.get('email')
-        logger.error(f"Received request data: {request.data}") 
-        print("order items" , order_items)
-        
+
         if not order_items:
-            logger.error("❌ order_items ცარიელია")
             return Response({"error": "order_items ცარიელია"}, status=status.HTTP_400_BAD_REQUEST)
-
-
+        
         # გადაამოწმე სწორი ტიპი
         if order_type not in dict(Order.ORDER_TYPE_CHOICES):
             return Response({"detail": "Invalid order type."}, status=status.HTTP_400_BAD_REQUEST)

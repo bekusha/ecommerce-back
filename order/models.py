@@ -5,6 +5,7 @@ from cart.models import Cart
 from product.models import Product
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from django.utils.timezone import localtime
 
 User = get_user_model()
 
@@ -18,6 +19,7 @@ class Order(models.Model):
         ('completed', 'Completed'),
         ('failed', 'Failed'),
         ('pending', 'Pending'),
+        ('not_paid', 'Not Paid'),
     ]
     
     STATUS_CHOICES = [
@@ -45,20 +47,10 @@ class Order(models.Model):
             channel_layer = get_channel_layer()
             group_name = f"user_{self.user.id}_{self.user.device_id}"
             # Convert datetime to string
-
-            print("Final Message Data:", {
-            'order_id': message['order_id'],
-            'status': message['status'],
-            'payment_status' : self.payment_status,
-            'order_type': message['order_type'],
-            'phone': message['phone'],
-            'address': message['address'],
-            'email': message['email'],
-            'courier_name': self.courier_name,  # დავამატოთ Order-ის ატრიბუტები
-            'courier_phone': self.courier_phone,
-            'delivery_time': self.delivery_time,
-            'mileage': self.mileage,
-        })
+            delivery_time_str = (
+            localtime(self.delivery_time).strftime("%Y-%m-%d %H:%M:%S")
+            if self.delivery_time else None
+            )
         
             async_to_sync(channel_layer.group_send)(
                 group_name,
@@ -71,30 +63,13 @@ class Order(models.Model):
                     'phone': message['phone'],
                     'address': message['address'],
                     'email': message['email'],
-                    'courier_name': self.courier_name,  # დავამატოთ Order-ის ატრიბუტები
+                    'courier_name': self.courier_name,  
                     'courier_phone': self.courier_phone,
-                    'delivery_time': self.delivery_time,
+                    'delivery_time': delivery_time_str,
                     'mileage': message.get('mileage', ''),
                 }
             )
     
-
-    # def save(self, *args, **kwargs):
-    #     """
-    #     თუ შეკვეთის სტატუსი `delivered` გახდა, წაშალოს OrderItem-ები და Order-ი.
-    #     `SavedOrder` დარჩება.
-    #     """
-    #     if self.pk:  # თუ Order უკვე არსებობს
-    #         old_status = Order.objects.get(pk=self.pk).status
-    #         if old_status != "delivered" and self.status == "delivered":
-    #             # წაშალე OrderItem-ები
-    #             self.order_items.all().delete()
-    #             # Order-ი წავშალოთ
-    #             self.delete()
-    #             return  # არ განვაახლოთ, რადგან Order აღარ არსებობს
-
-    #     super().save(*args, **kwargs)
-
     @property
     def ordered_at_georgian(self):
         georgian_timezone = pytz.timezone('Asia/Tbilisi')

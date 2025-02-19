@@ -2,19 +2,21 @@ import os
 from pathlib import Path
 import environ
 
+# .env-ის ინიციალიზაცია
 env = environ.Env()
 environ.Env.read_env(env_file='.env') 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# .env ცვლადების სწორად შემოტანა
 SECRET_KEY = env('SECRET_KEY')
-BOG_ACCESS_TOKEN = os.getenv("BOG_ACCESS_TOKEN")
-BOG_CLIENT_ID = os.getenv("BOG_CLIENT_ID")
-BOG_CLIENT_SECRET = os.getenv("BOG_CLIENT_SECRET")
-BOG_PUBLIC_KEY = os.getenv("BOG_PUBLIC_KEY")
+BOG_ACCESS_TOKEN = env("BOG_ACCESS_TOKEN")
+BOG_CLIENT_ID = env("BOG_CLIENT_ID")
+BOG_CLIENT_SECRET = env("BOG_CLIENT_SECRET")
 OPENAI_API_KEY = env('OPENAI_API_KEY')
 
 API_BASE_URL = env('API_BASE_URL')
+
 ALLOWED_HOSTS = ['*']
 
 CSRF_TRUSTED_ORIGINS = [

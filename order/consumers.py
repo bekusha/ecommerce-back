@@ -1,9 +1,8 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
-from channels.db import database_sync_to_async
-from django.contrib.auth import get_user_model
+
 import logging
-import asyncio
+
 
 logger = logging.getLogger(__name__)
 
@@ -11,12 +10,7 @@ class OrderConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.user_id = self.scope['url_route']['kwargs']['user_id']
         self.device_id = self.scope['url_route']['kwargs'].get('device_id', None)  # უსაფრთხო მიღება
-        if not self.device_id:
-            print(f"Device ID is missing for user {self.user_id}")
         self.room_group_name = f"user_{self.user_id}_{self.device_id}"
-
-
-
 
         # Join room group
         await self.channel_layer.group_add(
@@ -37,8 +31,6 @@ class OrderConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         data = json.loads(text_data)
-        print(f"Received WebSocket message: {data}")
-
         if data['type'] == 'new_order':
             # Send confirmation or broadcast update
             await self.channel_layer.group_send(
@@ -64,15 +56,3 @@ class OrderConsumer(AsyncWebsocketConsumer):
             'courier_phone': event.get('courier_phone', ''),
             'delivery_time': str(event.get('delivery_time', '')),  # Convert datetime to string
     }))
-
-
-    # async def send_ping_messages(self):
-    #         """Periodically sends ping messages to check connection"""
-    #         while True:
-    #             await asyncio.sleep(30)  # Send ping every 30 seconds
-    #             try:
-    #                 await self.send(text_data=json.dumps({'type': 'ping'}))
-    #                 logger.info(f"Ping sent to user {self.user_id}")
-    #             except Exception as e:
-    #                 logger.error(f"Failed to send ping to user {self.user_id}: {e}")
-    #                 break  # Stop sending pings if the connection is broken
