@@ -118,12 +118,6 @@ class BOGPaymentAPI:
    
 
 
-STATUS_MAPPING = {
-    "completed": "paid",
-    "failed": "not_paid",
-    "pending": "pending",
-}
-
 def redirect_after_payment(request, order_id):
     """ გადახდის დასრულების შემდეგ გადამისამართება აპლიკაციაში """
     try:
@@ -134,16 +128,14 @@ def redirect_after_payment(request, order_id):
         max_attempts = 5
         attempt = 0
 
-        while order.payment_status in ["not_paid", "pending", ""] and attempt < max_attempts:
+        while order.payment_status in ["pending", ""] and attempt < max_attempts:
             time.sleep(2)  # 2 წამის ლოდინი
             order.refresh_from_db()
             print(f"🔄 Checking Payment Status: Attempt {attempt + 1}, Status: {order.payment_status}")
             attempt += 1
 
-        # ✅ სწორი შედარება (თუ `completed` იყო, გადავიყვანოთ `paid`-ად)
-        final_status = STATUS_MAPPING.get(order.payment_status, "not_paid")
-        
-        redirect_url = f"krossgeorgia://payment-success/{order_id}" if final_status == "paid" else "krossgeorgia://payment-failed"
+        # ✅ პირდაპირ ვიყენებთ order.payment_status-ს, რადგან უკვე ემთხვევა ბანკის პასუხებს
+        redirect_url = f"krossgeorgia://payment-success/{order_id}" if order.payment_status == "completed" else "krossgeorgia://payment-failed"
         
         print(f"🚀 Redirecting to: {redirect_url}")
 
@@ -164,6 +156,7 @@ def redirect_after_payment(request, order_id):
 
     except Order.DoesNotExist:
         return HttpResponse("❌ Order not found", status=404)
+
 
 
 

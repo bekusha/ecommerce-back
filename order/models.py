@@ -15,9 +15,9 @@ class Order(models.Model):
     ]
 
     PAYMENT_STATUS_CHOICES = [
-        ('not_paid', 'Not Paid'),
+        ('completed', 'Completed'),
+        ('failed', 'Failed'),
         ('pending', 'Pending'),
-        ('paid', 'Paid'),
     ]
     
     STATUS_CHOICES = [
