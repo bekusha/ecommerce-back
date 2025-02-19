@@ -201,6 +201,10 @@ class PaymentCallbackApiView(APIView):
         signature = request.headers.get("Callback-Signature")
         request_body = request.body
 
+        print("Received callback signature:", signature)
+        print("Received callback body:", request_body)
+        print("received request headers", request.headers)
+
         if not signature:
             return Response({"error": "Callback-Signature არ არის header-ში"}, status=400)
 
