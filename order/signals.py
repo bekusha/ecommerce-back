@@ -99,22 +99,39 @@ def save_phone_number(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=Order)
 def save_order_data(sender, instance, **kwargs):
-    if instance.status == 'delivered' and not hasattr(instance, 'saved_order'):
+    if instance.status == 'delivered' or instance.payment_status == 'paid':
         SavedOrder.objects.create(
-            order=instance,
-            user=instance.user,
-            mileage=instance.mileage,
-            oil_used=instance.order_items.first().product if instance.order_items.exists() else None
+            order_data={
+                "order_id": instance.id,
+                "date": instance.ordered_at.strftime('%Y-%m-%d %H:%M:%S'),  # შეკვეთის თარიღი
+                "order_type": instance.order_type,  # შეკვეთის ტიპი (მაგ. ნავთის მიწოდება)
+                "status": instance.status,  # სტატუსი
+                "payment_status": instance.payment_status,  # გადახდის სტატუსი
+                "customer": {
+                    "id": instance.user.id,
+                    "username": instance.user.username,
+                    "phone": instance.phone,
+                    "email": instance.email,
+                },
+                "delivery": {
+                    "address": instance.address,
+                    "courier_name": instance.courier_name,
+                    "courier_phone": instance.courier_phone,
+                    "delivery_time": instance.delivery_time.strftime('%Y-%m-%d %H:%M:%S') if instance.delivery_time else None,
+                },
+                "mileage": instance.mileage,  # მანქანის გარბენი
+                "products": [
+                    {
+                        "product_id": item.product.id,
+                        "name": item.product.name,
+                        "total_price": float(item.total_price),
+                        "quantity": item.quantity,
+                         "total_price": float(item.total_price),
+                    }
+                    for item in instance.order_items.all()
+                ]
+            }
         )
         print(f"✅ Saved order created for order {instance.id}")
 
-    # ✅ **გადახდის წარმატების შემდეგ `saved_order` უნდა შეიქმნას**
-    if instance.payment_status == 'paid' and not hasattr(instance, 'saved_order'):
-        SavedOrder.objects.create(
-            order=instance,
-            user=instance.user,
-            mileage=instance.mileage,
-            oil_used=instance.order_items.first().product if instance.order_items.exists() else None
-        )
-        print(f"✅ Payment successful - saved order created for order {instance.id}")
 

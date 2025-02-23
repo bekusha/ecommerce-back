@@ -1,6 +1,9 @@
 # order/admin.py
 from django.contrib import admin
 from .models import Order, OrderItem, SavedOrder
+from django.utils.safestring import mark_safe
+import json
+
 
 
 class OrderItemInline(admin.TabularInline):  # ან admin.StackedInline
@@ -53,3 +56,20 @@ class OrderAdmin(admin.ModelAdmin):
 @admin.register(OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):
     list_display = ('order', 'product', 'quantity', 'total_price')
+
+
+### **📌 SavedOrder Admin** (JSON მონაცემების ლამაზად გამოსაჩენად)
+@admin.register(SavedOrder)
+class SavedOrderAdmin(admin.ModelAdmin):
+    list_display = ('id', 'created_at', 'formatted_order_data')  # ✅ რა გამოჩნდეს Admin Panel-ში
+    readonly_fields = ('created_at', 'formatted_order_data')  # ✅ მხოლოდ სანახავია
+
+    def formatted_order_data(self, obj):
+        """ JSONField-ის ლამაზად ფორმატირება და გამოტანა Django Admin-ში """
+        try:
+            formatted_json = json.dumps(obj.order_data, indent=4, ensure_ascii=False)
+            return mark_safe(f"<pre style='white-space: pre-wrap; word-wrap: break-word; max-height: 400px; overflow: auto;'>{formatted_json}</pre>")
+        except Exception:
+            return str(obj.order_data)  # fallback, თუ json.dumps ვერ დაამუშავებს
+
+    formatted_order_data.short_description = "Order Data" 

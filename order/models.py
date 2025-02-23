@@ -74,6 +74,19 @@ class Order(models.Model):
     def ordered_at_georgian(self):
         georgian_timezone = pytz.timezone('Asia/Tbilisi')
         return self.ordered_at.astimezone(georgian_timezone)
+    
+    def save(self, *args, **kwargs):
+        # თუ ჯერ არ არსებობს self.id, ეს ნიშნავს, რომ ეს ახალი შეკვეთაა
+        if not self.pk:
+            orders = Order.objects.filter(user=self.user).order_by('ordered_at')
+            if orders.count() >= 1:
+                orders.first().delete()  # ყველაზე ძველი შეკვეთის წაშლა
+
+        super().save(*args, **kwargs)  # შეკვეთის შენახვა
+
+
+    def __str__(self):
+        return f"Order{self.id} - {self.user.username} "
 
 
 class OrderItem(models.Model):
@@ -88,10 +101,16 @@ class OrderItem(models.Model):
     def total_price(self):
         return self.product.price * self.quantity
     
-class SavedOrder(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='saved_orders')
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='saved_orders')  
-    oil_used = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, verbose_name="Selected Oil Product")
-    created_at = models.DateTimeField(auto_now_add=True)
-    mileage = models.PositiveIntegerField(help_text="Mileage of the car in kilometers" , null=True, blank=True)
+# class SavedOrder(models.Model):
+#     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='saved_orders')
+#     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='saved_orders')  
+#     oil_used = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, verbose_name="Selected Oil Product")
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     mileage = models.PositiveIntegerField(help_text="Mileage of the car in kilometers" , null=True, blank=True)
      
+class SavedOrder(models.Model):
+    order_data = models.JSONField( default=dict )  # შეკვეთის სრული ინფორმაცია
+    created_at = models.DateTimeField(auto_now_add=True)  # შენახვის დრო
+
+    def __str__(self):
+        return f"Saved Order - {self.created_at}"
