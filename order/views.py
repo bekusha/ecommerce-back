@@ -259,7 +259,7 @@ class PurchaseAPIView(APIView):
         phone = request.data.get('phone')
         address = request.data.get('address')
         email = request.data.get('email')
-
+        mileage = request.data.get('mileage')
         if not order_items:
             return Response({"error": "order_items ცარიელია"}, status=status.HTTP_400_BAD_REQUEST)
         
@@ -272,7 +272,8 @@ class PurchaseAPIView(APIView):
                                     order_type=order_type,
                                     phone=phone,
                                     address=address,
-                                    email=email
+                                    email=email,
+                                    mileage=mileage
                                      )
                                      
 
@@ -309,11 +310,20 @@ class PurchaseAPIView(APIView):
             "payment_url": payment_url
         }, status=status.HTTP_201_CREATED)
 
-
 class SavedOrderListAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        saved_orders = SavedOrder.objects.filter(user=request.user)
+        saved_orders = SavedOrder.objects.all().order_by('-created_at')[:3]  # ბოლო 3 შეკვეთა
         serializer = SavedOrderSerializer(saved_orders, many=True)
-        return Response(serializer.data) 
+        return Response(serializer.data)
+
+
+# კონკრეტული შენახული შეკვეთის API
+class SavedOrderDetailsAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, saved_order_id):
+        saved_order = get_object_or_404(SavedOrder, id=saved_order_id)
+        serializer = SavedOrderSerializer(saved_order)
+        return Response(serializer.data)

@@ -3,17 +3,27 @@ from rest_framework import serializers
 from .models import Order, OrderItem, SavedOrder
 
 class OrderSerializer(serializers.ModelSerializer):
+    oil_used_name = serializers.SerializerMethodField()
+
     class Meta:
         model = Order
-        fields = '__all__'
+        fields = ['id', 'order_type', 'phone', 'address', 'email', 'ordered_at',
+                  'status', 'courier_name', 'courier_phone', 'delivery_time',
+                  'mileage', 'payment_status', 'user', 'oil_used_name']
+
+    def get_oil_used_name(self, obj):
+        # პირველი შეკვეთილი პროდუქტის პოვნა
+        order_item = obj.order_items.first()
+        if order_item and order_item.product:
+            return order_item.product.name  # ვაბრუნებთ ზეთის სახელს
+        return "უცნობი"
+
 
 class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
         fields = ['product', 'quantity']
 class SavedOrderSerializer(serializers.ModelSerializer):
-    oil_used_name = serializers.CharField(source="oil_used.name", read_only=True)  # იღებს ზეთის სახელს
-
     class Meta:
         model = SavedOrder
-        fields = ['id', 'oil_used_name', 'mileage', 'oil_used', 'created_at']
+        fields = '__all__'
